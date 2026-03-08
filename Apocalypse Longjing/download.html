@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>下载 - Apocalypse Longjing</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- AOS Animation Library -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6C63FF',
+                        secondary: '#4A4AFF',
+                        dark: '#1A1A2E',
+                        light: '#F5F5F5',
+                        accent: '#FF6584'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        display: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-gradient {
+                @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
+            }
+            .bg-glass {
+                @apply bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg;
+            }
+            .transition-all-300 {
+                @apply transition-all duration-300 ease-in-out;
+            }
+        }
+        
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            @apply bg-dark;
+        }
+        ::-webkit-scrollbar-thumb {
+            @apply bg-primary rounded-full;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            @apply bg-secondary;
+        }
+        
+        /* 平滑滚动 */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* 背景动画 */
+        body {
+            background-image: url('https://p11-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/8ef4a2493f80403dab57747827ed8000~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=202603042009522669BF8AF384B3BF114B&rrcfp=f06b921b&x-expires=1775218235&x-signature=3JxHlhHoH0y%2FPutNlRSLSK38NZo%3D');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(26, 26, 46, 0.7) 100%);
+            z-index: 1;
+        }
+        .content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* 动画样式 */
+        .download-text {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .download-text.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .download-text.hide {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        
+        /* 加载动画 */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+        
+        .animate-pulse-slow {
+            animation: pulse 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-dark text-light font-sans min-h-screen flex items-center justify-center">
+    <div class="content w-full">
+        <!-- 顶部导航 -->
+        <nav class="fixed top-0 left-0 right-0 z-50 bg-dark bg-opacity-80 backdrop-blur-lg py-4 px-6">
+            <div class="container mx-auto flex justify-between items-center">
+                <a href="index.html" class="text-2xl font-bold text-gradient">Apocalypse Longjing</a>
+                <a href="index.html" class="text-sm text-gray-400 hover:text-primary transition-all-300">返回首页</a>
+            </div>
+        </nav>
+        
+        <!-- 主要内容 -->
+        <div class="min-h-screen flex items-center">
+            <div class="container mx-auto px-6 md:px-12 text-center">
+                <div class="max-w-2xl mx-auto">
+                    <!-- 下载标题 -->
+                    <h1 class="text-4xl md:text-5xl font-bold mb-8 text-gradient">
+                        下载中心
+                    </h1>
+                    
+                    <!-- 动画文字区域 -->
+                    <div class="mb-12">
+                        <div id="thank-you-text" class="download-text text-2xl md:text-3xl font-medium mb-6">
+                            感谢您的支持
+                        </div>
+                        <div id="download-start-text" class="download-text text-2xl md:text-3xl font-medium mb-6">
+                            下载马上开始！
+                        </div>
+                    </div>
+                    
+                    <!-- 加载动画 -->
+                    <div id="loading-animation" class="mb-8">
+                        <div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                        <p class="text-gray-400">准备下载中...</p>
+                    </div>
+                    
+                    <!-- 下载信息 -->
+                    <div class="bg-glass p-6 rounded-xl border border-gray-800 mb-8">
+                        <h3 class="text-xl font-bold mb-4">下载详情</h3>
+                        <p class="text-gray-300 mb-4">文件：<span class="text-primary" id="file-name">面试文件.docx</span></p>
+                        <p class="text-gray-300 mb-4">状态：<span class="text-primary" id="file-size">正在传输...</span></p>
+                        <p class="text-gray-300">格式：<span class="text-primary" id="file-format">文件.docx</span></p>
+                    </div>
+                    
+                    <!-- 备用下载按钮 -->
+                    <div>
+                        <a href="#" id="download-link" class="bg-primary hover:bg-secondary text-white px-8 py-3 rounded-full font-medium transition-all-300 inline-block">
+                            <i class="fa fa-download mr-2"></i>手动下载
+                        </a>
+                        <p class="text-gray-400 mt-4 text-sm">如果下载未自动开始，请点击上方按钮</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // 初始化 AOS 动画库
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+        
+        // DOM 加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            const thankYouText = document.getElementById('thank-you-text');
+            const downloadStartText = document.getElementById('download-start-text');
+            const fileNameElement = document.getElementById('file-name');
+            const fileSizeElement = document.getElementById('file-size');
+            const fileFormatElement = document.getElementById('file-format');
+            const downloadLinkElement = document.getElementById('download-link');
+            
+            // 初始状态：隐藏所有文字
+            thankYouText.classList.remove('show');
+            downloadStartText.classList.remove('show');
+            
+            // 解析 URL 参数
+            const urlParams = new URLSearchParams(window.location.search);
+            let downloadPath = urlParams.get('file') || 'xiazai/02.doc';
+            
+            // 提取文件名
+            const fileName = downloadPath.split('/').pop();
+            // 提取文件格式
+            const fileFormat = fileName.split('.').pop();
+            
+            // 更新下载信息
+            fileNameElement.textContent = fileName;
+            fileFormatElement.textContent = fileFormat;
+            
+            // 根据文件类型设置文件大小（这里使用默认值，实际项目中可以根据文件实际大小设置）
+            fileSizeElement.textContent = '约 2MB';
+            
+            // 更新下载链接
+            downloadLinkElement.href = downloadPath;
+            
+            // 5 秒延迟后开始动画
+            setTimeout(() => {
+                // 显示 "感谢您的支持"
+                thankYouText.classList.add('show');
+                
+                // 2 秒后隐藏 "感谢您的支持"
+                setTimeout(() => {
+                    thankYouText.classList.add('hide');
+                    
+                    // 0.5 秒后显示 "下载马上开始！"
+                    setTimeout(() => {
+                        downloadStartText.classList.add('show');
+                        
+                        // 1.5 秒后开始下载
+                        setTimeout(() => {
+                            window.location.href = downloadPath;
+                        }, 1500);
+                    }, 500);
+                }, 2000);
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

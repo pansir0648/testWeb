@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - 页面未找到</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- AOS Animation Library -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6C63FF',
+                        secondary: '#4A4AFF',
+                        dark: '#1A1A2E',
+                        light: '#F5F5F5',
+                        accent: '#FF6584'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        display: ['Poppins', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'custom': '0 10px 30px -5px rgba(108, 99, 255, 0.3)',
+                        'hover': '0 20px 40px -5px rgba(108, 99, 255, 0.5)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-gradient {
+                @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
+            }
+            .bg-glass {
+                @apply bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg;
+            }
+            .transition-all-300 {
+                @apply transition-all duration-300 ease-in-out;
+            }
+            .card-hover {
+                @apply hover:scale-105 hover:shadow-hover transition-all-300;
+            }
+        }
+        
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            @apply bg-dark;
+        }
+        ::-webkit-scrollbar-thumb {
+            @apply bg-primary rounded-full;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            @apply bg-secondary;
+        }
+        
+        /* 平滑滚动 */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* 背景动画 */
+        body {
+            background-image: url('https://p11-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/8ef4a2493f80403dab57747827ed8000~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=202603042009522669BF8AF384B3BF114B&rrcfp=f06b921b&x-expires=1775218235&x-signature=3JxHlhHoH0y%2FPutNlRSLSK38NZo%3D');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(26, 26, 46, 0.7) 100%);
+            z-index: 1;
+        }
+        .content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* 404 动画 */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .pulse-animation {
+            animation: pulse 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-dark text-light font-sans min-h-screen flex items-center justify-center">
+    <div class="content w-full max-w-4xl px-4">
+        <div class="text-center" data-aos="fade-up">
+            <!-- 404 数字 -->
+            <div class="mb-8">
+                <h1 class="text-9xl md:text-[120px] font-bold text-gradient float-animation">
+                    404
+                </h1>
+            </div>
+            
+            <!-- 错误信息 -->
+            <div class="mb-10">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4" data-aos="fade-up" data-aos-delay="100">
+                    页面未找到
+                </h2>
+                <p class="text-xl text-gray-400 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="200">
+                    抱歉，您访问的页面不存在或已被移除。
+                    可能是地址输入错误，或页面已被移动到其他位置。
+                </p>
+            </div>
+            
+            <!-- 导航按钮 -->
+            <div class="flex flex-col sm:flex-row justify-center gap-4" data-aos="fade-up" data-aos-delay="300">
+                <a href="index.html" class="bg-primary hover:bg-secondary text-white px-8 py-3 rounded-full font-medium transition-all-300 pulse-animation">
+                    <i class="fa fa-home mr-2"></i>返回首页
+                </a>
+                <a href="verification.html" class="border-2 border-primary hover:border-secondary text-primary hover:text-secondary px-8 py-3 rounded-full font-medium transition-all-300">
+                    <i class="fa fa-lock mr-2"></i>验证访问
+                </a>
+            </div>
+            
+            <!-- 装饰元素 -->
+            <div class="mt-16 flex justify-center space-x-8" data-aos="fade-up" data-aos-delay="400">
+                <a href="javascript:void(0)" id="search-icon" class="w-16 h-16 border-2 border-primary rounded-full flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all-300">
+                    <i class="fa fa-search text-2xl"></i>
+                </a>
+                <a href="index.html" class="w-16 h-16 border-2 border-accent rounded-full flex items-center justify-center text-accent hover:bg-accent hover:text-white transition-all-300">
+                    <i class="fa fa-map-marker text-2xl"></i>
+                </a>
+                <a href="javascript:void(0)" id="refresh-icon" class="w-16 h-16 border-2 border-secondary rounded-full flex items-center justify-center text-secondary hover:bg-secondary hover:text-white transition-all-300">
+                    <i class="fa fa-refresh text-2xl"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // 初始化 AOS 动画库
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+        
+        // 页面加载动画
+        window.addEventListener('DOMContentLoaded', function() {
+            // 搜索图标功能
+            const searchIcon = document.getElementById('search-icon');
+            searchIcon.addEventListener('click', function() {
+                // 创建搜索框
+                const searchContainer = document.createElement('div');
+                searchContainer.className = 'fixed top-4 right-4 z-50 bg-glass p-4 rounded-lg border border-gray-700 shadow-lg';
+                searchContainer.innerHTML = `
+                    <form action="https://www.bing.com/search" method="get" class="flex">
+                        <input type="text" name="q" placeholder="搜索..." class="bg-dark border border-gray-700 rounded-l-lg px-4 py-2 text-white focus:outline-none focus:border-primary transition-all-300">
+                        <button type="submit" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-r-lg transition-all-300">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </form>
+                `;
+                document.body.appendChild(searchContainer);
+                
+                // 自动聚焦到搜索框
+                searchContainer.querySelector('input').focus();
+                
+                // 点击其他地方关闭搜索框
+                setTimeout(() => {
+                    document.addEventListener('click', function closeSearch(e) {
+                        if (!searchContainer.contains(e.target) && e.target !== searchIcon) {
+                            searchContainer.remove();
+                            document.removeEventListener('click', closeSearch);
+                        }
+                    });
+                }, 100);
+            });
+            
+            // 刷新图标功能
+            const refreshIcon = document.getElementById('refresh-icon');
+            refreshIcon.addEventListener('click', function() {
+                window.location.reload();
+            });
+        });
+    </script>
+</body>
+</html>
