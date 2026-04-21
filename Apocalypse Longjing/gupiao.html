@@ -1,0 +1,3288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>同瓜顺 - 专业股票交易平台</title>
+  <!-- Tailwind CSS v3 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+  <!-- 统一的 Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1a202c',
+            secondary: '#2d3748',
+            accent: '#4299e1',
+            success: '#10b981',
+            danger: '#ef4444',
+            warning: '#f59e0b',
+            info: '#3b82f6',
+            dark: '#121212',
+            'dark-light': '#1e1e30',
+            'dark-lighter': '#2a3a50'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .bg-gradient-dark {
+        background: linear-gradient(to bottom, #0c1220, #162032);
+      }
+      .border-glow {
+        box-shadow: 0 0 5px rgba(66, 153, 225, 0.5);
+      }
+      .card-shadow {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+      .hover-scale {
+        transition: transform 0.2s ease-in-out;
+      }
+      .hover-scale:hover {
+        transform: scale(1.02);
+      }
+    }
+  </style>
+  <style>
+    /* 自定义滚动条 */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1e1e30;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #4299e1;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3182ce;
+    }
+    
+    /* 页面切换动画 */
+    .page-transition {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .page-enter {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    .page-enter-active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* 数字变化动画 */
+    @keyframes numberChange {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    .number-change {
+      animation: numberChange 0.3s ease;
+    }
+    
+    /* 闪烁效果 */
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    .blink {
+      animation: blink 1s infinite;
+    }
+    
+    /* 粒子背景 */
+    #particles-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.2;
+    }
+  </style>
+</head>
+<body class="bg-gradient-dark text-gray-200 min-h-screen">
+  <!-- 粒子背景 -->
+  <canvas id="particles-bg"></canvas>
+  
+  <!-- 主容器 -->
+  <div class="container mx-auto px-4 py-8 max-w-6xl">
+    <!-- 页面内容 - 初始显示开户页面 -->
+    <div id="app" class="relative">
+      <!-- 开户页面 -->
+      <div id="open-account-page" class="page-transition page-enter-active">
+        <div class="flex flex-col items-center justify-center min-h-[80vh]">
+          <div class="text-center mb-12">
+            <div class="flex justify-center mb-4">
+              <img src="image/img/logo(GP).png" alt="同瓜顺" class="w-20 h-20">
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-white">同瓜顺</h1>
+            <p class="text-xl text-gray-400">零风险体验股票交易，掌握投资技巧</p>
+          </div>
+          
+          <div class="w-full max-w-md bg-dark-light bg-opacity-60 backdrop-blur-sm rounded-lg border border-dark-lighter p-8 card-shadow">
+            <h2 class="text-2xl font-semibold mb-6 text-center text-white">快速开户</h2>
+            
+            <form id="account-form" class="space-y-6">
+              <div>
+                <label for="phone" class="block text-sm font-medium text-gray-400 mb-2">手机号码</label>
+                <input 
+                  type="tel" 
+                  id="phone" 
+                  class="w-full px-4 py-3 bg-dark border border-dark-lighter rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-white"
+                  placeholder="请输入手机号码"
+                  required
+                >
+              </div>
+              
+              <input type="hidden" id="selected-risk-level" name="riskLevel" value="R3">
+              
+              <button 
+                type="submit" 
+                id="submit-account"
+                class="w-full bg-accent hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-md transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed"
+                disabled
+              >
+                立即开户
+              </button>
+              
+              <button 
+                id="back-to-home"
+                class="w-full mt-4 bg-dark hover:bg-dark-lighter text-gray-300 font-medium py-3 px-4 rounded-md transition-colors border border-dark-lighter"
+              >
+                <i class="fa fa-arrow-left mr-2"></i>返回首页
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 股票列表主页 -->
+      <div id="stock-list-page" class="page-transition hidden">
+        <!-- 顶部导航栏 -->
+        <header class="bg-dark-light bg-opacity-60 backdrop-blur-sm rounded-lg border border-dark-lighter p-4 mb-6 sticky top-4 z-10 card-shadow">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+            <div class="flex items-center mb-4 md:mb-0">
+              <h1 class="text-2xl font-bold text-white mr-4">同瓜顺</h1>
+              <div class="bg-dark rounded-md px-3 py-1 text-sm">
+                <span class="text-gray-400">账户:</span>
+                <span id="user-phone" class="text-white ml-1">138****8000</span>
+              </div>
+            </div>
+            
+            <div class="flex items-center space-x-4 w-full md:w-auto">
+              <div class="bg-dark rounded-md px-3 py-1 text-sm">
+                <span class="text-gray-400">总资产:</span>
+                <span id="total-assets" class="text-white ml-1 font-medium">¥200,000.00</span>
+              </div>
+              
+              <div class="bg-dark rounded-md px-3 py-1 text-sm">
+                <span class="text-gray-400">可用资金:</span>
+                <span id="available-funds" class="text-white ml-1 font-medium">¥200,000.00</span>
+              </div>
+              
+              <button id="back-to-home-btn" class="bg-dark hover:bg-dark-lighter text-gray-300 px-3 py-1 rounded-md text-sm transition-colors">
+                <i class="fa fa-home mr-1"></i>返回首页
+              </button>
+              
+              <button id="recharge-btn" class="bg-success hover:bg-green-600 text-white px-3 py-1 rounded-md text-sm transition-colors">
+                充值
+              </button>
+              
+              <button id="logout-btn" class="bg-dark hover:bg-dark-lighter text-gray-300 px-3 py-1 rounded-md text-sm transition-colors">
+                退出
+              </button>
+            </div>
+          </div>
+        </header>
+        
+        <!-- 搜索栏 -->
+        <div class="bg-dark-light bg-opacity-60 backdrop-blur-sm rounded-lg border border-dark-lighter p-4 mb-6 card-shadow">
+          <div class="flex space-x-2">
+            <div class="relative flex-grow">
+              <input 
+                type="text" 
+                id="stock-search"
+                class="w-full pl-10 pr-4 py-2 bg-dark border border-dark-lighter rounded-l-md focus:outline-none focus:ring-2 focus:ring-accent text-white"
+                placeholder="搜索股票代码或名称"
+              >
+              <i class="fa fa-search absolute left-3 top-3 text-gray-500"></i>
+            </div>
+            <button id="search-btn" class="bg-accent hover:bg-blue-600 text-white px-4 py-2 rounded-r-md transition-colors">
+              搜索
+            </button>
+            <button id="custom-stock-btn" class="bg-dark hover:bg-dark-lighter border border-dark-lighter text-white px-4 py-2 rounded-md transition-colors">
+              <i class="fa fa-plus mr-1"></i> 自定义股票
+            </button>
+          </div>
+        </div>
+        
+        <!-- 风险等级分类 -->
+        <div class="bg-dark-light bg-opacity-60 backdrop-blur-sm rounded-lg border border-dark-lighter p-4 mb-6 card-shadow">
+          <h3 class="text-sm font-medium text-gray-400 mb-3">风险等级分类</h3>
+          <div class="flex flex-wrap gap-2">
+            <button class="risk-filter-btn bg-accent text-white px-3 py-1 rounded-md text-xs transition-colors" data-level="all">全部</button>
+            <button class="risk-filter-btn bg-dark text-gray-400 hover:text-white px-3 py-1 rounded-md text-xs transition-colors" data-level="R1">R1 (低风险)</button>
+            <button class="risk-filter-btn bg-dark text-gray-400 hover:text-white px-3 py-1 rounded-md text-xs transition-colors" data-level="R2">R2 (中低风险)</button>
+            <button class="risk-filter-btn bg-dark text-gray-400 hover:text-white px-3 py-1 rounded-md text-xs transition-colors" data-level="R3">R3 (中风险)</button>
+            <button class="risk-filter-btn bg-dark text-gray-400 hover:text-white px-3 py-1 rounded-md text-xs transition-colors" data-level="R4">R4 (中高风险)</button>
+            <button class="risk-filter-btn bg-dark text-gray-400 hover:text-white px-3 py-1 rounded-md text-xs transition-colors" data-level="R5">R5 (高风险)</button>
+          </div>
+        </div>
+        
+        <!-- 股票列表 -->
+        <div class="bg-dark-light bg-opacity-60 backdrop-blur-sm rounded-lg border border-dark-lighter overflow-hidden card-shadow">
+          <div class="grid grid-cols-12 bg-dark py-2 px-4 text-sm text-gray-400 border-b border-dark-lighter">
+            <div class="col-span-4 md:col-span-3">股票名称</div>
+            <div class="col-span-3 md:col-span-2">最新价</div>
+            <div class="col-span-2 md:col-span-2">涨跌幅</div>
+            <div class="col-span-3 md:col-span-2">涨跌额</div>
+            <div class="hidden md:block md:col-span-3">操作</div>
+          </div>
+          
+          <div id="stock-list" class="max-h-[calc(100vh-280px)] overflow-y-auto">
+            <!-- 股票列表项将通过JavaScript动态生成 -->
+          </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <nav class="fixed bottom-0 left-0 right-0 bg-dark-light bg-opacity-90 backdrop-blur-sm border-t border-dark-lighter py-2 px-4 z-20">
+          <div class="flex justify-around max-w-6xl mx-auto">
+            <button id="market-btn" class="flex flex-col items-center px-4 py-2 text-accent">
+              <i class="fa fa-list text-xl"></i>
+              <span class="text-xs mt-1">行情</span>
+            </button>
+            
+            <button id="holdings-btn" class="flex flex-col items-center px-4 py-2 text-gray-400 hover:text-accent">
+              <i class="fa fa-briefcase text-xl"></i>
+              <span class="text-xs mt-1">持仓</span>
+            </button>
+            
+            <button id="transactions-btn" class="flex flex-col items-center px-4 py-2 text-gray-400 hover:text-accent">
+              <i class="fa fa-exchange text-xl"></i>
+              <span class="text-xs mt-1">交易记录</span>
+            </button>
+            
+            <button id="account-btn" class="flex flex-col items-center px-4 py-2 text-gray-400 hover:text-accent">
+              <i class="fa fa-user text-xl"></i>
+              <span class="text-xs mt-1">账户</span>
+            </button>
+          </div>
+        </nav>
+      </div>
+      
+      <!-- 股票详情页面 -->
+      <div id="stock-detail-page" class="page-transition hidden">
+        <!-- 顶部导航栏 -->
+        <header class="bg-dark-light bg-opacity-60 backdrop-blur-sm rounded-lg border border-dark-lighter p-4 mb-6 sticky top-4 z-10 card-shadow">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center">
+              <button id="back-to-list" class="text-gray-400 hover:text-white mr-4">
+                <i class="fa fa-arrow-left"></i>
+              </button>
+              <div>
+                <h1 id="detail-stock-name" class="text-xl font-bold text-white">苹果公司</h1>
+                <div class="flex items-center text-sm">
+                  <span id="detail-stock-symbol" class="text-gray-400 mr-2">AAPL</span>
+                  <span id="detail-stock-market" class="bg-dark rounded px-2 py-0.5 text-xs text-gray-400">美股</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+              <div class="text-right">
+                <div id="detail-stock-price" class="text-2xl font-bold text-white">¥150.25</div>
+                <div class="flex items-center justify-end">
+                  <span id="detail-stock-change" class="text-success mr-2">+2.50</span>
+                  <span id="detail-stock-change-percent" class="text-success">+1.69%</span>
+                </div>
+              </div>
+              
+              <!-- 调整涨幅按钮（仅对自定义股票显示） -->
+              <button id="adjust-change-btn" class="bg-dark hover:bg-dark-lighter border border-dark-lighter text-white px-3 py-1 rounded-md text-sm transition-colors hidden">
+                <i class="fa fa-sliders mr-1"></i> 调整涨幅
+              </button>
+            </div>
+          </div>
+        </header>
+        
+        <!-- 股票基本信息 -->
+        <div class="bg-dark-light bg-opacity-60 backdrop-blur-sm rounded-lg border border-dark-lighter p-4 mb-6 card-shadow">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div>
+              <span class="text-gray-400">开盘</span>
+              <span id="detail-open" class="text-white ml-1">147.80</span>
+            </div>
+            <div>
+              <span class="text-gray-400">最高</span>
+              <span id="detail-high" class="text-white ml-1">151.20</span>
+            </div>
+            <div>
+              <span class="text-gray-400">最低</span>
+              <span id="detail-low" class="text-white ml-1">147.50</span>
+            </div>
+            <div>
+              <span class="text-gray-400">均价</span>
+              <span id="detail-avg-price" class="text-white ml-1">149.19</span>
+            </div>
+            <div>
+              <span class="text-gray-400">成交量</span>
+              <span id="detail-volume" class="text-white ml-1">1.25亿</span>
+            </div>
+            <div>
+              <span class="text-gray-400">成交额</span>
+              <span id="detail-amount" class="text-white ml-1">18.64亿</span>
+            </div>
+            <div>
+              <span class="text-gray-400">换手率</span>
+              <span id="detail-turnover" class="text-white ml-1">0.57%</span>
+            </div>
+            <div>
+              <span class="text-gray-400">市值</span>
+              <span id="detail-market-cap" class="text-white ml-1">2.45万亿</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- K线图区域 -->
+        <div class="bg-dark-light bg-opacity-60 backdrop-blur-sm rounded-lg border border-dark-lighter p-4 mb-6 card-shadow">
+          <div class="flex justify-between items-center mb-4">
+            <div class="flex space-x-2">
+              <button class="time-period-btn bg-accent text-white px-3 py-1 rounded-md text-sm" data-period="day">分时</button>
+              <button class="time-period-btn bg-dark text-gray-400 hover:text-white px-3 py-1 rounded-md text-sm" data-period="5day">5日</button>
+              <button class="time-period-btn bg-dark text-gray-400 hover:text-white px-3 py-1 rounded-md text-sm" data-period="week">日K</button>
+              <button class="time-period-btn bg-dark text-gray-400 hover:text-white px-3 py-1 rounded-md text-sm" data-period="month">周K</button>
+              <button class="time-period-btn bg-dark text-gray-400 hover:text-white px-3 py-1 rounded-md text-sm" data-period="year">月K</button>
+              <div class="relative">
+                <button class="time-period-btn bg-dark text-gray-400 hover:text-white px-3 py-1 rounded-md text-sm">
+                  更多 <i class="fa fa-caret-down text-xs"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+              <div class="text-sm text-gray-400">
+                <span id="current-date">2025-07-21 04:00</span>
+              </div>
+              
+              <!-- 速度设置 -->
+              <div class="relative">
+                <button id="speed-settings-btn" class="text-gray-400 hover:text-white">
+                  <i class="fa fa-cog"></i>
+                </button>
+                <div id="speed-settings-dropdown" class="absolute right-0 mt-2 w-32 bg-dark-light border border-dark-lighter rounded-md shadow-lg hidden">
+                  <div class="py-1">
+                    <a href="#" class="speed-option block px-4 py-2 text-sm text-gray-300 hover:bg-dark-lighter" data-speed="5000">5秒</a>
+                    <a href="#" class="speed-option block px-4 py-2 text-sm text-gray-300 hover:bg-dark-lighter" data-speed="10000">10秒</a>
+                    <a href="#" class="speed-option block px-4 py-2 text-sm text-gray-300 hover:bg-dark-lighter" data-speed="30000">30秒</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="h-80">
+            <canvas id="stock-chart"></canvas>
+          </div>
+          
+          <!-- 副图 -->
+          <div class="h-40 mt-4">
+            <canvas id="stock-sub-chart"></canvas>
+          </div>
+        </div>
+        
+        <!-- 买卖盘口信息 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <!-- 买卖盘口 -->
+          <div class="bg-dark-light bg-opacity-60 backdrop-blur-sm rounded-lg border border-dark-lighter p-4 card-shadow">
+            <h3 class="text-lg font-medium text-white mb-4">买卖盘口</h3>
+            <div class="grid grid-cols-2 gap-4">
+              <!-- 卖盘 -->
+              <div>
+                <h4 class="text-sm text-gray-400 mb-2">卖盘</h4>
+                <div class="space-y-2">
+                  <div class="flex justify-between text-sm">
+                    <span class="text-danger">卖5</span>
+                    <span class="text-white">155.20</span>
+                    <span class="text-gray-400">1200</span>
+                  </div>
+                  <div class="flex justify-between text-sm">
+                    <span class="text-danger">卖4</span>
+                    <span class="text-white">154.80</span>
+                    <span class="text-gray-400">800</span>
+                  </div>
+                  <div class="flex justify-between text-sm">
+                    <span class="text-danger">卖3</span>
+                    <span class="text-white">154.50</span>
+                    <span class="text-gray-400">1500</span>
+                  </div>
+                  <div class="flex justify-between text-sm">
+                    <span class="text-danger">卖2</span>
+                    <span class="text-white">154.20</span>
+                    <span class="text-gray-400">2000</span>
+                  </div>
+                  <div class="flex justify-between text-sm">
+                    <span class="text-danger">卖1</span>
+                    <span class="text-white">154.00</span>
+                    <span class="text-gray-400">3000</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 买盘 -->
+              <div>
+                <h4 class="text-sm text-gray-400 mb-2">买盘</h4>
+                <div class="space-y-2">
+                  <div class="flex justify-between text-sm">
+                    <span class="text-success">买1</span>
+                    <span class="text-white">153.80</span>
+                    <span class="text-gray-400">2500</span>
+                  </div>
+                  <div class="flex justify-between text-sm">
+                    <span class="text-success">买2</span>
+                    <span class="text-white">153.50</span>
+                    <span class="text-gray-400">1800</span>
+                  </div>
+                  <div class="flex justify-between text-sm">
+                    <span class="text-success">买3</span>
+                    <span class="text-white">153.20</span>
+                    <span class="text-gray-400">1200</span>
+                  </div>
+                  <div class="flex justify-between text-sm">
+                    <span class="text-success">买4</span>
+                    <span class="text-white">153.00</span>
+                    <span class="text-gray-400">900</span>
+                  </div>
+                  <div class="flex justify-between text-sm">
+                    <span class="text-success">买5</span>
+                    <span class="text-white">152.80</span>
+                    <span class="text-gray-400">600</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 成交明细 -->
+          <div class="bg-dark-light bg-opacity-60 backdrop-blur-sm rounded-lg border border-dark-lighter p-4 card-shadow">
+            <h3 class="text-lg font-medium text-white mb-4">成交明细</h3>
+            <div class="max-h-48 overflow-y-auto">
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-gray-400">03:59</span>
+                  <span class="text-white">154.00</span>
+                  <span class="text-gray-400">1287</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-400">03:58</span>
+                  <span class="text-white">153.90</span>
+                  <span class="text-gray-400">1420</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-400">03:57</span>
+                  <span class="text-white">153.80</span>
+                  <span class="text-gray-400">950</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-400">03:56</span>
+                  <span class="text-white">153.70</span>
+                  <span class="text-gray-400">1100</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-400">03:55</span>
+                  <span class="text-white">153.60</span>
+                  <span class="text-gray-400">850</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 持仓信息 -->
+          <div class="bg-dark-light bg-opacity-60 backdrop-blur-sm rounded-lg border border-dark-lighter p-4 card-shadow">
+            <h3 class="text-lg font-medium text-white mb-4">持仓信息</h3>
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-400">持仓数量</span>
+                <span id="holding-shares" class="text-white">0股</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">持仓成本</span>
+                <span id="holding-cost" class="text-white">0.00</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">当前市值</span>
+                <span id="holding-value" class="text-white">0.00</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">盈亏</span>
+                <span id="holding-profit" class="text-success">0.00</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">盈亏比例</span>
+                <span id="holding-profit-percent" class="text-success">0.00%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 交易操作区 -->
+        <div class="bg-dark-light bg-opacity-60 backdrop-blur-sm rounded-lg border border-dark-lighter p-4 mb-6 card-shadow">
+          <div class="flex mb-4">
+            <button id="buy-tab" class="flex-1 py-2 text-center font-medium text-white bg-accent rounded-l-md">买入</button>
+            <button id="sell-tab" class="flex-1 py-2 text-center font-medium text-gray-400 bg-dark rounded-r-md">卖出</button>
+          </div>
+          
+          <div id="buy-form" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-2">可用资金</label>
+              <div class="bg-dark rounded-md px-4 py-2">
+                <span id="buy-available-funds" class="text-white">¥200,000.00</span>
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-2">杠杆倍数: <span id="buy-leverage-value">1</span>倍</label>
+              <input 
+                type="range" 
+                id="buy-leverage" 
+                class="w-full h-2 bg-dark rounded-lg appearance-none cursor-pointer" 
+                min="1" 
+                max="100" 
+                step="1" 
+                value="1"
+              >
+              <div class="flex justify-between text-xs text-gray-400 mt-1">
+                <span>1倍</span>
+                <span>50倍</span>
+                <span>100倍</span>
+              </div>
+            </div>
+            
+            <div>
+              <label for="buy-price" class="block text-sm font-medium text-gray-400 mb-2">买入价格</label>
+              <input 
+                type="number" 
+                id="buy-price" 
+                class="w-full px-4 py-2 bg-dark border border-dark-lighter rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-white"
+                step="0.01"
+                min="0"
+              >
+            </div>
+            
+            <div>
+              <label for="buy-shares" class="block text-sm font-medium text-gray-400 mb-2">买入数量</label>
+              <div class="flex">
+                <input 
+                  type="number" 
+                  id="buy-shares" 
+                  class="flex-grow px-4 py-2 bg-dark border border-dark-lighter rounded-l-md focus:outline-none focus:ring-2 focus:ring-accent text-white"
+                  step="100"
+                  min="100"
+                >
+                <div class="flex flex-col">
+                  <button class="bg-dark border border-dark-lighter border-l-0 px-3 py-1 hover:bg-dark-lighter rounded-tr-md">
+                    <i class="fa fa-caret-up text-white"></i>
+                  </button>
+                  <button class="bg-dark border border-dark-lighter border-l-0 px-3 py-1 hover:bg-dark-lighter rounded-br-md">
+                    <i class="fa fa-caret-down text-white"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="flex justify-between mt-2">
+                <button class="quick-shares bg-dark hover:bg-dark-lighter text-gray-300 px-2 py-1 rounded text-xs transition-colors" data-shares="100">100股</button>
+                <button class="quick-shares bg-dark hover:bg-dark-lighter text-gray-300 px-2 py-1 rounded text-xs transition-colors" data-shares="500">500股</button>
+                <button class="quick-shares bg-dark hover:bg-dark-lighter text-gray-300 px-2 py-1 rounded text-xs transition-colors" data-shares="1000">1000股</button>
+                <button class="quick-shares bg-dark hover:bg-dark-lighter text-gray-300 px-2 py-1 rounded text-xs transition-colors" data-shares="5000">5000股</button>
+                <button class="quick-shares bg-dark hover:bg-dark-lighter text-gray-300 px-2 py-1 rounded text-xs transition-colors" data-shares="max">全仓</button>
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-2">交易金额</label>
+              <div class="bg-dark rounded-md px-4 py-2">
+                <span id="buy-total-amount" class="text-white">¥0.00</span>
+              </div>
+            </div>
+            
+            <button id="buy-submit" class="w-full bg-success hover:bg-green-600 text-white font-medium py-3 px-4 rounded-md transition-colors">
+              确认买入
+            </button>
+          </div>
+          
+          <div id="sell-form" class="space-y-4 hidden">
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-2">持仓数量</label>
+              <div class="bg-dark rounded-md px-4 py-2">
+                <span id="sell-available-shares" class="text-white">0股</span>
+              </div>
+            </div>
+            
+
+            
+            <div>
+              <label for="sell-price" class="block text-sm font-medium text-gray-400 mb-2">卖出价格</label>
+              <input 
+                type="number" 
+                id="sell-price" 
+                class="w-full px-4 py-2 bg-dark border border-dark-lighter rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-white"
+                step="0.01"
+                min="0"
+              >
+            </div>
+            
+            <div>
+              <label for="sell-shares" class="block text-sm font-medium text-gray-400 mb-2">卖出数量</label>
+              <div class="flex">
+                <input 
+                  type="number" 
+                  id="sell-shares" 
+                  class="flex-grow px-4 py-2 bg-dark border border-dark-lighter rounded-l-md focus:outline-none focus:ring-2 focus:ring-accent text-white"
+                  step="100"
+                  min="100"
+                >
+                <div class="flex flex-col">
+                  <button class="bg-dark border border-dark-lighter border-l-0 px-3 py-1 hover:bg-dark-lighter rounded-tr-md">
+                    <i class="fa fa-caret-up text-white"></i>
+                  </button>
+                  <button class="bg-dark border border-dark-lighter border-l-0 px-3 py-1 hover:bg-dark-lighter rounded-br-md">
+                    <i class="fa fa-caret-down text-white"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="flex justify-between mt-2">
+                <button class="quick-shares-sell bg-dark hover:bg-dark-lighter text-gray-300 px-2 py-1 rounded text-xs transition-colors" data-shares="100">100股</button>
+                <button class="quick-shares-sell bg-dark hover:bg-dark-lighter text-gray-300 px-2 py-1 rounded text-xs transition-colors" data-shares="500">500股</button>
+                <button class="quick-shares-sell bg-dark hover:bg-dark-lighter text-gray-300 px-2 py-1 rounded text-xs transition-colors" data-shares="1000">1000股</button>
+                <button class="quick-shares-sell bg-dark hover:bg-dark-lighter text-gray-300 px-2 py-1 rounded text-xs transition-colors" data-shares="5000">5000股</button>
+                <button class="quick-shares-sell bg-dark hover:bg-dark-lighter text-gray-300 px-2 py-1 rounded text-xs transition-colors" data-shares="max">全部</button>
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-2">交易金额</label>
+              <div class="bg-dark rounded-md px-4 py-2">
+                <span id="sell-total-amount" class="text-white">¥0.00</span>
+              </div>
+            </div>
+            
+            <button id="sell-submit" class="w-full bg-danger hover:bg-red-600 text-white font-medium py-3 px-4 rounded-md transition-colors">
+              确认卖出
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 持仓页面 -->
+      <div id="holdings-page" class="page-transition hidden">
+        <!-- 顶部导航栏 -->
+        <header class="bg-dark-light bg-opacity-60 backdrop-blur-sm rounded-lg border border-dark-lighter p-4 mb-6 sticky top-4 z-10 card-shadow">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center">
+              <button id="back-to-list-from-holdings" class="text-gray-400 hover:text-white mr-4">
+                <i class="fa fa-arrow-left"></i>
+              </button>
+              <h1 class="text-xl font-bold text-white">我的持仓</h1>
+            </div>
+            
+            <div class="text-right">
+              <div class="text-sm text-gray-400">总市值</div>
+              <div id="holdings-total-value" class="text-xl font-bold text-white">¥0.00</div>
+            </div>
+          </div>
+        </header>
+        
+        <!-- 持仓列表 -->
+        <div class="bg-dark-light bg-opacity-60 backdrop-blur-sm rounded-lg border border-dark-lighter overflow-hidden card-shadow">
+          <div class="grid grid-cols-12 bg-dark py-2 px-4 text-sm text-gray-400 border-b border-dark-lighter">
+            <div class="col-span-4">股票名称</div>
+            <div class="col-span-2 hidden md:block">持仓量</div>
+            <div class="col-span-3 md:col-span-2">现价</div>
+            <div class="col-span-3 md:col-span-2">盈亏</div>
+            <div class="col-span-2 md:col-span-2">操作</div>
+          </div>
+          
+          <div id="holdings-list" class="max-h-[calc(100vh-200px)] overflow-y-auto">
+            <!-- 持仓列表项将通过JavaScript动态生成 -->
+            <div class="grid grid-cols-12 py-3 px-4 border-b border-dark-lighter hover:bg-dark hover:bg-opacity-30 transition-colors">
+              <div class="col-span-12 text-center text-gray-400 py-8">
+                暂无持仓，请先买入股票
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 交易记录页面 -->
+      <div id="transactions-page" class="page-transition hidden">
+        <!-- 顶部导航栏 -->
+        <header class="bg-dark-light bg-opacity-60 backdrop-blur-sm rounded-lg border border-dark-lighter p-4 mb-6 sticky top-4 z-10 card-shadow">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center">
+              <button id="back-to-list-from-transactions" class="text-gray-400 hover:text-white mr-4">
+                <i class="fa fa-arrow-left"></i>
+              </button>
+              <h1 class="text-xl font-bold text-white">交易记录</h1>
+            </div>
+            
+            <div class="flex space-x-2">
+              <button class="transaction-filter bg-accent text-white px-3 py-1 rounded-md text-sm" data-filter="all">全部</button>
+              <button class="transaction-filter bg-dark text-gray-400 hover:text-white px-3 py-1 rounded-md text-sm" data-filter="buy">买入</button>
+              <button class="transaction-filter bg-dark text-gray-400 hover:text-white px-3 py-1 rounded-md text-sm" data-filter="sell">卖出</button>
+            </div>
+          </div>
+        </header>
+        
+        <!-- 交易记录列表 -->
+        <div class="bg-dark-light bg-opacity-60 backdrop-blur-sm rounded-lg border border-dark-lighter overflow-hidden card-shadow">
+          <div class="grid grid-cols-12 bg-dark py-2 px-4 text-sm text-gray-400 border-b border-dark-lighter">
+            <div class="col-span-4 md:col-span-2">时间</div>
+            <div class="col-span-4 md:col-span-2">股票</div>
+            <div class="col-span-2 md:col-span-1">类型</div>
+            <div class="col-span-2 md:col-span-2 hidden md:block">价格</div>
+            <div class="col-span-3 md:col-span-2">数量</div>
+            <div class="col-span-3 md:col-span-3">金额</div>
+          </div>
+          
+          <div id="transactions-list" class="max-h-[calc(100vh-200px)] overflow-y-auto">
+            <!-- 交易记录列表项将通过JavaScript动态生成 -->
+            <div class="grid grid-cols-12 py-3 px-4 border-b border-dark-lighter">
+              <div class="col-span-12 text-center text-gray-400 py-8">
+                暂无交易记录
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 账户页面 -->
+      <div id="account-page" class="page-transition hidden">
+        <!-- 顶部导航栏 -->
+        <header class="bg-dark-light bg-opacity-60 backdrop-blur-sm rounded-lg border border-dark-lighter p-4 mb-6 sticky top-4 z-10 card-shadow">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center">
+              <button id="back-to-list-from-account" class="text-gray-400 hover:text-white mr-4">
+                <i class="fa fa-arrow-left"></i>
+              </button>
+              <h1 class="text-xl font-bold text-white">账户信息</h1>
+            </div>
+          </div>
+        </header>
+        
+        <!-- 账户信息卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div class="bg-dark-light bg-opacity-60 backdrop-blur-sm rounded-lg border border-dark-lighter p-4 card-shadow">
+            <h2 class="text-lg font-medium text-white mb-4">账户概览</h2>
+            <div class="space-y-4">
+              <div class="flex justify-between">
+                <span class="text-gray-400">手机号码</span>
+                <span id="account-phone" class="text-white">138****8000</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">风险等级</span>
+                <span id="account-risk-level" class="text-white">R3</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">开户时间</span>
+                <span id="account-created-at" class="text-white">2025-07-21 10:00</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-dark-light bg-opacity-60 backdrop-blur-sm rounded-lg border border-dark-lighter p-4 card-shadow">
+            <h2 class="text-lg font-medium text-white mb-4">资金概览</h2>
+            <div class="space-y-4">
+              <div class="flex justify-between">
+                <span class="text-gray-400">总资产</span>
+                <span id="account-total-assets" class="text-white font-medium">¥200,000.00</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">可用资金</span>
+                <span id="account-available-funds" class="text-white font-medium">¥200,000.00</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">持仓市值</span>
+                <span id="account-holdings-value" class="text-white font-medium">¥0.00</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">总盈亏</span>
+                <span id="account-total-profit" class="text-success font-medium">¥0.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 操作按钮 -->
+        <div class="bg-dark-light bg-opacity-60 backdrop-blur-sm rounded-lg border border-dark-lighter p-4 card-shadow">
+          <button id="reset-account" class="w-full bg-warning hover:bg-yellow-600 text-white font-medium py-3 px-4 rounded-md transition-colors mb-4">
+            重置账户
+          </button>
+          <button id="logout-from-account" class="w-full bg-dark hover:bg-dark-lighter text-gray-300 font-medium py-3 px-4 rounded-md transition-colors">
+            退出登录
+          </button>
+        </div>
+      </div>
+      
+      <!-- 交易成功提示 -->
+      <div id="trade-success-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="bg-dark-light bg-opacity-90 backdrop-blur-sm rounded-lg border border-dark-lighter p-6 max-w-md w-full mx-4 card-shadow relative z-10">
+          <div class="text-center">
+            <div id="trade-success-icon" class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-success bg-opacity-20 text-success text-2xl mb-4">
+              <i class="fa fa-check"></i>
+            </div>
+            <h3 id="trade-success-title" class="text-xl font-bold text-white mb-2">交易成功</h3>
+            <p id="trade-success-message" class="text-gray-400 mb-6">您已成功买入 100 股苹果公司股票</p>
+            <button id="close-trade-modal" class="bg-accent hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-md transition-colors">
+              确定
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 自定义股票模态框 -->
+      <div id="custom-stock-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="bg-dark-light bg-opacity-90 backdrop-blur-sm rounded-lg border border-dark-lighter p-6 max-w-md w-full mx-4 card-shadow relative z-10">
+          <div class="text-center mb-6">
+            <h3 class="text-xl font-bold text-white mb-4">创建自定义股票</h3>
+          </div>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-1">股票名称</label>
+              <input type="text" id="custom-stock-name" class="w-full px-4 py-2 bg-dark border border-dark-lighter rounded-md text-white focus:outline-none focus:ring-2 focus:ring-accent" placeholder="请输入股票名称">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-1">股票代码</label>
+              <input type="text" id="custom-stock-symbol" class="w-full px-4 py-2 bg-dark border border-dark-lighter rounded-md text-white focus:outline-none focus:ring-2 focus:ring-accent" placeholder="请输入股票代码">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-1">初始价格</label>
+              <input type="number" id="custom-stock-price" class="w-full px-4 py-2 bg-dark border border-dark-lighter rounded-md text-white focus:outline-none focus:ring-2 focus:ring-accent" placeholder="请输入初始价格" step="0.01" min="0.01">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-1">涨跌幅 (%)</label>
+              <input type="number" id="custom-stock-change" class="w-full px-4 py-2 bg-dark border border-dark-lighter rounded-md text-white focus:outline-none focus:ring-2 focus:ring-accent" placeholder="请输入涨跌幅" step="0.01" min="-100">
+            </div>
+            <div class="flex space-x-4 mt-6">
+              <button id="cancel-custom-stock" class="flex-1 bg-dark hover:bg-dark-lighter text-gray-300 font-medium py-2 px-4 rounded-md transition-colors">
+                取消
+              </button>
+              <button id="create-custom-stock" class="flex-1 bg-accent hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition-colors">
+                创建
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 调整涨幅模态框 -->
+      <div id="adjust-change-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="bg-dark-light bg-opacity-90 backdrop-blur-sm rounded-lg border border-dark-lighter p-6 max-w-md w-full mx-4 card-shadow relative z-10">
+          <div class="text-center mb-6">
+            <h3 class="text-xl font-bold text-white mb-4">调整涨幅</h3>
+          </div>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-1">涨跌幅 (%)</label>
+              <input type="number" id="adjust-stock-change" class="w-full px-4 py-2 bg-dark border border-dark-lighter rounded-md text-white focus:outline-none focus:ring-2 focus:ring-accent" placeholder="请输入涨跌幅" step="0.01" min="-100">
+            </div>
+            <div class="flex space-x-4 mt-6">
+              <button id="cancel-adjust-change" class="flex-1 bg-dark hover:bg-dark-lighter text-gray-300 font-medium py-2 px-4 rounded-md transition-colors">
+                取消
+              </button>
+              <button id="confirm-adjust-change" class="flex-1 bg-accent hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition-colors">
+                确认
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 充值模态框 -->
+      <div id="recharge-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="bg-dark-light bg-opacity-90 backdrop-blur-sm rounded-lg border border-dark-lighter p-6 max-w-md w-full mx-4 card-shadow relative z-10">
+          <div class="text-center mb-6">
+            <h3 class="text-xl font-bold text-white mb-4">充值</h3>
+          </div>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-1">充值金额</label>
+              <input type="number" id="recharge-amount" class="w-full px-4 py-2 bg-dark border border-dark-lighter rounded-md text-white focus:outline-none focus:ring-2 focus:ring-accent" placeholder="请输入充值金额" step="1000" min="1000">
+            </div>
+            <div class="flex space-x-4 mt-6">
+              <button id="cancel-recharge" class="flex-1 bg-dark hover:bg-dark-lighter text-gray-300 font-medium py-2 px-4 rounded-md transition-colors">
+                取消
+              </button>
+              <button id="confirm-recharge" class="flex-1 bg-success hover:bg-green-600 text-white font-medium py-2 px-4 rounded-md transition-colors">
+                确认充值
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // 全局变量
+    let currentUser = null;
+    let currentStock = null;
+    let stockChart = null;
+    let stockSubChart = null;
+    let currentTimePeriod = 'day';
+    let updateInterval = null;
+    let updateSpeed = 5000; // 默认5秒更新一次
+    
+    // 存储原始股票顺序
+    let originalStockOrder = [];
+    
+    // 初始化原始股票顺序
+    function initOriginalStockOrder() {
+      originalStockOrder = Array.from(document.querySelectorAll('#stock-list > div'));
+    }
+    
+    // 返回首页按钮点击事件
+    document.getElementById('back-to-home').addEventListener('click', function() {
+      window.location.href = 'index.html';
+    });
+    
+    // 顶部导航栏返回首页按钮点击事件
+    document.getElementById('back-to-home-btn').addEventListener('click', function() {
+      window.location.href = 'index.html';
+    });
+    
+    // 模拟股票数据
+    const mockStocks = [
+      // 美股
+      {
+        symbol: 'AAPL',
+        name: '苹果公司',
+        market: '美股',
+        riskLevel: 'R2',
+        currentPrice: 150.25,
+        change: 2.5,
+        changePercent: 1.69,
+        volume: 12500000,
+        marketCap: 2450000000000,
+        open: 147.8,
+        high: 151.2,
+        low: 147.5,
+        close: 150.25,
+        historicalData: []
+      },
+      {
+        symbol: 'BABA',
+        name: '阿里巴巴',
+        market: '美股',
+        riskLevel: 'R3',
+        currentPrice: 85.75,
+        change: -1.25,
+        changePercent: -1.44,
+        volume: 8750000,
+        marketCap: 185000000000,
+        open: 87.0,
+        high: 87.3,
+        low: 85.2,
+        close: 85.75,
+        historicalData: []
+      },
+      {
+        symbol: 'TSLA',
+        name: '特斯拉',
+        market: '美股',
+        riskLevel: 'R4',
+        currentPrice: 248.30,
+        change: 5.75,
+        changePercent: 2.37,
+        volume: 15300000,
+        marketCap: 790000000000,
+        open: 242.5,
+        high: 250.1,
+        low: 241.8,
+        close: 248.3,
+        historicalData: []
+      },
+      {
+        symbol: 'JD',
+        name: '京东',
+        market: '美股',
+        riskLevel: 'R3',
+        currentPrice: 42.85,
+        change: 0.65,
+        changePercent: 1.54,
+        volume: 6200000,
+        marketCap: 58000000000,
+        open: 42.2,
+        high: 43.1,
+        low: 42.0,
+        close: 42.85,
+        historicalData: []
+      },
+      {
+        symbol: 'PDD',
+        name: '拼多多',
+        market: '美股',
+        riskLevel: 'R4',
+        currentPrice: 132.40,
+        change: 3.25,
+        changePercent: 2.51,
+        volume: 7800000,
+        marketCap: 165000000000,
+        open: 129.15,
+        high: 133.2,
+        low: 128.8,
+        close: 132.4,
+        historicalData: []
+      },
+      {
+        symbol: 'NFLX',
+        name: '奈飞',
+        market: '美股',
+        riskLevel: 'R3',
+        currentPrice: 628.75,
+        change: -8.35,
+        changePercent: -1.31,
+        volume: 4100000,
+        marketCap: 295000000000,
+        open: 637.1,
+        high: 638.5,
+        low: 625.2,
+        close: 628.75,
+        historicalData: []
+      },
+      {
+        symbol: 'BILI',
+        name: '哔哩哔哩',
+        market: '美股',
+        riskLevel: 'R5',
+        currentPrice: 15.35,
+        change: 0.85,
+        changePercent: 5.86,
+        volume: 9500000,
+        marketCap: 22000000000,
+        open: 14.5,
+        high: 15.6,
+        low: 14.4,
+        close: 15.35,
+        historicalData: []
+      },
+      {
+        symbol: 'MSFT',
+        name: '微软',
+        market: '美股',
+        riskLevel: 'R2',
+        currentPrice: 342.50,
+        change: 3.25,
+        changePercent: 0.96,
+        volume: 8900000,
+        marketCap: 3100000000000,
+        open: 339.25,
+        high: 343.10,
+        low: 338.80,
+        close: 342.50,
+        historicalData: []
+      },
+      {
+        symbol: 'GOOGL',
+        name: '谷歌',
+        market: '美股',
+        riskLevel: 'R2',
+        currentPrice: 135.75,
+        change: -1.25,
+        changePercent: -0.91,
+        volume: 12300000,
+        marketCap: 2050000000000,
+        open: 137.00,
+        high: 137.50,
+        low: 135.20,
+        close: 135.75,
+        historicalData: []
+      },
+      // A股
+      {
+        symbol: '600519',
+        name: '贵州茅台',
+        market: 'A股',
+        riskLevel: 'R2',
+        currentPrice: 1789.00,
+        change: 12.50,
+        changePercent: 0.70,
+        volume: 250000,
+        marketCap: 2245000000000,
+        open: 1776.50,
+        high: 1795.00,
+        low: 1772.00,
+        close: 1789.00,
+        historicalData: []
+      },
+      {
+        symbol: '000858',
+        name: '五粮液',
+        market: 'A股',
+        riskLevel: 'R2',
+        currentPrice: 168.50,
+        change: -2.30,
+        changePercent: -1.34,
+        volume: 1250000,
+        marketCap: 658000000000,
+        open: 170.80,
+        high: 171.20,
+        low: 167.80,
+        close: 168.50,
+        historicalData: []
+      },
+      {
+        symbol: '601318',
+        name: '中国平安',
+        market: 'A股',
+        riskLevel: 'R1',
+        currentPrice: 48.25,
+        change: 0.35,
+        changePercent: 0.73,
+        volume: 3500000,
+        marketCap: 785000000000,
+        open: 47.90,
+        high: 48.40,
+        low: 47.80,
+        close: 48.25,
+        historicalData: []
+      },
+      {
+        symbol: '600036',
+        name: '招商银行',
+        market: 'A股',
+        riskLevel: 'R1',
+        currentPrice: 35.60,
+        change: -0.55,
+        changePercent: -1.52,
+        volume: 2800000,
+        marketCap: 956000000000,
+        open: 36.15,
+        high: 36.20,
+        low: 35.40,
+        close: 35.60,
+        historicalData: []
+      },
+      {
+        symbol: '000333',
+        name: '美的集团',
+        market: 'A股',
+        riskLevel: 'R2',
+        currentPrice: 58.30,
+        change: 0.85,
+        changePercent: 1.48,
+        volume: 1800000,
+        marketCap: 425000000000,
+        open: 57.45,
+        high: 58.50,
+        low: 57.30,
+        close: 58.30,
+        historicalData: []
+      },
+      // 港股
+      {
+        symbol: '0700',
+        name: '腾讯控股',
+        market: '港股',
+        riskLevel: 'R3',
+        currentPrice: 345.60,
+        change: 5.20,
+        changePercent: 1.53,
+        volume: 12500000,
+        marketCap: 3300000000000,
+        open: 340.40,
+        high: 346.80,
+        low: 339.20,
+        close: 345.60,
+        historicalData: []
+      },
+      {
+        symbol: '0939',
+        name: '建设银行',
+        market: '港股',
+        riskLevel: 'R1',
+        currentPrice: 5.65,
+        change: 0.05,
+        changePercent: 0.89,
+        volume: 85000000,
+        marketCap: 1560000000000,
+        open: 5.60,
+        high: 5.68,
+        low: 5.59,
+        close: 5.65,
+        historicalData: []
+      },
+      {
+        symbol: '1299',
+        name: '友邦保险',
+        market: '港股',
+        riskLevel: 'R2',
+        currentPrice: 72.35,
+        change: -0.85,
+        changePercent: -1.16,
+        volume: 3800000,
+        marketCap: 985000000000,
+        open: 73.20,
+        high: 73.40,
+        low: 72.10,
+        close: 72.35,
+        historicalData: []
+      },
+      {
+        symbol: 'NVDA',
+        name: '英伟达',
+        market: '美股',
+        riskLevel: 'R4',
+        currentPrice: 1245.80,
+        change: 25.30,
+        changePercent: 2.07,
+        volume: 7200000,
+        marketCap: 3100000000000,
+        open: 1220.5,
+        high: 1250.2,
+        low: 1218.7,
+        close: 1245.8,
+        historicalData: []
+      },
+      {
+        symbol: 'META',
+        name: '元宇宙',
+        market: '美股',
+        riskLevel: 'R3',
+        currentPrice: 485.25,
+        change: -5.75,
+        changePercent: -1.17,
+        volume: 8900000,
+        marketCap: 1210000000000,
+        open: 491.0,
+        high: 492.3,
+        low: 483.5,
+        close: 485.25,
+        historicalData: []
+      },
+      {
+        symbol: 'GOOGL',
+        name: '谷歌',
+        market: '美股',
+        riskLevel: 'R2',
+        currentPrice: 178.30,
+        change: 2.15,
+        changePercent: 1.22,
+        volume: 5400000,
+        marketCap: 2350000000000,
+        open: 176.15,
+        high: 179.2,
+        low: 175.8,
+        close: 178.3,
+        historicalData: []
+      },
+      {
+        symbol: 'AMZN',
+        name: '亚马逊',
+        market: '美股',
+        riskLevel: 'R3',
+        currentPrice: 172.45,
+        change: -1.35,
+        changePercent: -0.78,
+        volume: 6700000,
+        marketCap: 1780000000000,
+        open: 173.8,
+        high: 174.2,
+        low: 171.5,
+        close: 172.45,
+        historicalData: []
+      },
+      {
+        symbol: 'MSFT',
+        name: '微软',
+        market: '美股',
+        riskLevel: 'R2',
+        currentPrice: 410.85,
+        change: 3.45,
+        changePercent: 0.85,
+        volume: 7100000,
+        marketCap: 3120000000000,
+        open: 407.4,
+        high: 412.3,
+        low: 406.9,
+        close: 410.85,
+        historicalData: []
+      },
+      {
+        symbol: 'NIO',
+        name: '蔚来汽车',
+        market: '美股',
+        riskLevel: 'R5',
+        currentPrice: 7.85,
+        change: 0.45,
+        changePercent: 6.08,
+        volume: 12300000,
+        marketCap: 14000000000,
+        open: 7.4,
+        high: 8.0,
+        low: 7.35,
+        close: 7.85,
+        historicalData: []
+      },
+      {
+        symbol: 'XPEV',
+        name: '小鹏汽车',
+        market: '美股',
+        riskLevel: 'R5',
+        currentPrice: 12.35,
+        change: -0.25,
+        changePercent: -1.98,
+        volume: 5800000,
+        marketCap: 8500000000,
+        open: 12.6,
+        high: 12.7,
+        low: 12.2,
+        close: 12.35,
+        historicalData: []
+      },
+      {
+        symbol: 'LI',
+        name: '理想汽车',
+        market: '美股',
+        riskLevel: 'R4',
+        currentPrice: 38.45,
+        change: 1.25,
+        changePercent: 3.36,
+        volume: 7200000,
+        marketCap: 28000000000,
+        open: 37.2,
+        high: 38.8,
+        low: 37.0,
+        close: 38.45,
+        historicalData: []
+      }
+    ];
+    
+    // 生成历史K线数据
+    function generateHistoricalData(stock) {
+      const data = [];
+      const today = new Date();
+      let price = stock.currentPrice * (0.8 + Math.random() * 0.4); // 起始价格
+      const volatility = 0.02 + Math.random() * 0.03; // 波动率
+      
+      // 生成90天的历史数据
+      for (let i = 90; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        
+        // 模拟价格波动
+        const change = (Math.random() - 0.5) * 2 * volatility * price;
+        price += change;
+        
+        const open = price * (0.99 + Math.random() * 0.02);
+        const close = price;
+        const high = Math.max(open, close) * (1 + Math.random() * 0.01);
+        const low = Math.min(open, close) * (1 - Math.random() * 0.01);
+        const volume = Math.floor(Math.random() * 10000000) + 1000000;
+        
+        data.push({
+          date: date.toISOString().split('T')[0],
+          open: parseFloat(open.toFixed(2)),
+          high: parseFloat(high.toFixed(2)),
+          low: parseFloat(low.toFixed(2)),
+          close: parseFloat(close.toFixed(2)),
+          volume: volume
+        });
+      }
+      
+      return data;
+    }
+    
+    // 初始化所有股票的历史数据
+    function initAllStocksData() {
+      mockStocks.forEach(stock => {
+        stock.historicalData = generateHistoricalData(stock);
+      });
+    }
+    
+    // 格式化数字为货币格式
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('zh-CN', {
+        style: 'currency',
+        currency: 'CNY',
+        minimumFractionDigits: 2
+      }).format(amount);
+    }
+    
+    // 格式化数字为普通数字格式
+    function formatNumber(num) {
+      return new Intl.NumberFormat('zh-CN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(num);
+    }
+    
+    // 格式化大数字（如成交量、市值）
+    function formatLargeNumber(num) {
+      if (num >= 1000000000000) {
+        return (num / 1000000000000).toFixed(2) + '万亿';
+      } else if (num >= 100000000) {
+        return (num / 100000000).toFixed(2) + '亿';
+      } else if (num >= 10000) {
+        return (num / 10000).toFixed(2) + '万';
+      } else {
+        return num.toString();
+      }
+    }
+    
+    // 根据风险等级返回相应的CSS类
+    function getRiskLevelClass(riskLevel) {
+      switch (riskLevel) {
+        case 'R1':
+          return 'text-blue-400';
+        case 'R2':
+          return 'text-green-400';
+        case 'R3':
+          return 'text-yellow-400';
+        case 'R4':
+          return 'text-orange-400';
+        case 'R5':
+          return 'text-red-400';
+        default:
+          return 'text-gray-400';
+      }
+    }
+    
+    // 初始化用户数据
+    function initUserData() {
+      const storedUser = localStorage.getItem('currentUser');
+      if (storedUser) {
+        currentUser = JSON.parse(storedUser);
+        showStockListPage();
+      } else {
+        showOpenAccountPage();
+      }
+    }
+    
+    // 显示开户页面
+    function showOpenAccountPage() {
+      document.getElementById('open-account-page').classList.remove('hidden');
+      document.getElementById('stock-list-page').classList.add('hidden');
+      document.getElementById('stock-detail-page').classList.add('hidden');
+      document.getElementById('holdings-page').classList.add('hidden');
+      document.getElementById('transactions-page').classList.add('hidden');
+      document.getElementById('account-page').classList.add('hidden');
+      
+      // 添加进入动画
+      setTimeout(() => {
+        document.getElementById('open-account-page').classList.add('page-enter-active');
+        document.getElementById('open-account-page').classList.remove('page-enter');
+      }, 10);
+    }
+    
+    // 显示股票列表页面
+    function showStockListPage() {
+      document.getElementById('open-account-page').classList.add('hidden');
+      document.getElementById('stock-list-page').classList.remove('hidden');
+      document.getElementById('stock-detail-page').classList.add('hidden');
+      document.getElementById('holdings-page').classList.add('hidden');
+      document.getElementById('transactions-page').classList.add('hidden');
+      document.getElementById('account-page').classList.add('hidden');
+      
+      // 更新用户信息
+      document.getElementById('user-phone').textContent = currentUser.phoneNumber.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+      document.getElementById('total-assets').textContent = formatCurrency(currentUser.balance + calculateHoldingsValue());
+      document.getElementById('available-funds').textContent = formatCurrency(currentUser.balance);
+      
+      // 渲染股票列表
+      renderStockList();
+      
+      // 添加进入动画
+      setTimeout(() => {
+        document.getElementById('stock-list-page').classList.add('page-enter-active');
+        document.getElementById('stock-list-page').classList.remove('page-enter');
+      }, 10);
+    }
+    
+    // 模拟股票价格实时变化
+    function updateStockPrice() {
+      // 更新所有股票的价格
+      mockStocks.forEach(stock => {
+        let change;
+        if (stock.custom && stock.customChangePercent) {
+          // 对于自定义股票，使用用户设置的涨跌幅
+          change = (stock.currentPrice * stock.customChangePercent) / 100 / (60 / (updateSpeed / 1000)); // 按比例分配到每个更新周期
+        } else {
+          // 根据股票自身的风险等级确定涨跌幅幅度和涨跌概率
+          let volatility = 0.02; // 默认中风险
+          let upProbability = 0.5; // 默认涨跌概率各50%
+          
+          switch (stock.riskLevel) {
+            case 'R1':
+              volatility = 0.005; // 低风险，涨跌幅很小
+              upProbability = 0.9; // 90%的概率上涨
+              break;
+            case 'R2':
+              volatility = 0.01; // 中低风险，涨跌幅较小
+              upProbability = 0.8; // 80%的概率上涨
+              break;
+            case 'R3':
+              volatility = 0.02; // 中风险，涨跌幅正常
+              upProbability = 0.5; // 50%的概率上涨
+              break;
+            case 'R4':
+              volatility = 0.03; // 中高风险，涨跌幅较大
+              upProbability = 0.5; // 50%的概率上涨
+              break;
+            case 'R5':
+              volatility = 0.05; // 高风险，涨跌幅很大
+              upProbability = 0.4; // 40%的概率上涨
+              break;
+          }
+          
+          // 生成随机涨跌
+          let direction = Math.random() < upProbability ? 1 : -1;
+          // 生成随机涨跌幅
+          let randomChange = Math.random() * volatility;
+          // 计算最终变化
+          change = direction * randomChange * stock.currentPrice;
+        }
+        
+        const newPrice = stock.currentPrice + change;
+        
+        // 更新股票数据
+        const oldPrice = stock.currentPrice;
+        stock.currentPrice = parseFloat(newPrice.toFixed(2));
+        stock.change = parseFloat((stock.currentPrice - oldPrice).toFixed(2));
+        stock.changePercent = parseFloat(((stock.change / oldPrice) * 100).toFixed(2));
+      });
+      
+      // 如果当前有显示的股票，更新页面显示
+      if (currentStock) {
+        // 更新页面显示
+        document.getElementById('detail-stock-price').textContent = formatCurrency(currentStock.currentPrice);
+        
+        const changeElement = document.getElementById('detail-stock-change');
+        const changePercentElement = document.getElementById('detail-stock-change-percent');
+        
+        if (currentStock.change >= 0) {
+          changeElement.textContent = '+' + formatNumber(currentStock.change);
+          changePercentElement.textContent = '+' + currentStock.changePercent.toFixed(2) + '%';
+          changeElement.className = 'text-success mr-2';
+          changePercentElement.className = 'text-success';
+        } else {
+          changeElement.textContent = formatNumber(currentStock.change);
+          changePercentElement.textContent = currentStock.changePercent.toFixed(2) + '%';
+          changeElement.className = 'text-danger mr-2';
+          changePercentElement.className = 'text-danger';
+        }
+        
+        // 更新表单价格
+        document.getElementById('buy-price').value = currentStock.currentPrice;
+        document.getElementById('sell-price').value = currentStock.currentPrice;
+        
+        // 更新交易金额
+        updateBuyTotalAmount();
+        updateSellTotalAmount();
+        
+        // 更新持仓信息
+        const holding = getHolding(currentStock.symbol);
+        if (holding) {
+          const currentValue = holding.shares * currentStock.currentPrice;
+          document.getElementById('holding-value').textContent = formatCurrency(currentValue);
+          
+          const profit = currentValue - (holding.shares * holding.avgCost);
+          const profitPercent = (profit / (holding.shares * holding.avgCost)) * 100;
+          
+          const profitElement = document.getElementById('holding-profit');
+          const profitPercentElement = document.getElementById('holding-profit-percent');
+          
+          if (profit >= 0) {
+            profitElement.textContent = '+' + formatCurrency(profit);
+            profitPercentElement.textContent = '+' + profitPercent.toFixed(2) + '%';
+            profitElement.className = 'text-success';
+            profitPercentElement.className = 'text-success';
+          } else {
+            profitElement.textContent = formatCurrency(profit);
+            profitPercentElement.textContent = profitPercent.toFixed(2) + '%';
+            profitElement.className = 'text-danger';
+            profitPercentElement.className = 'text-danger';
+          }
+        }
+        
+        // 更新K线图数据
+        updateChartData();
+      }
+      
+      // 如果当前在股票列表页面，更新股票列表
+      if (!document.getElementById('stock-list-page').classList.contains('hidden')) {
+        renderStockList();
+      }
+      
+      // 如果当前在持仓页面，更新持仓列表
+      if (!document.getElementById('holdings-page').classList.contains('hidden')) {
+        renderHoldingsList();
+      }
+    }
+    
+    // 更新图表数据
+    function updateChartData() {
+      if (!stockChart || !stockSubChart || !currentStock) return;
+      
+      // 获取当前图表数据
+      const datasets = stockChart.data.datasets;
+      const labels = stockChart.data.labels;
+      const subDatasets = stockSubChart.data.datasets;
+      
+      // 生成新的数据点
+      const lastDate = new Date(labels[labels.length - 1]);
+      const newDate = new Date(lastDate);
+      newDate.setDate(newDate.getDate() + 1);
+      const newDateStr = newDate.toISOString().split('T')[0];
+      
+      // 使用当前股票的实际价格
+      const newPrice = currentStock.currentPrice;
+      const newVolume = Math.floor(Math.random() * 10000000 + 1000000); // 随机成交量
+      
+      // 更新主图数据
+      labels.push(newDateStr);
+      datasets[0].data.push(parseFloat(newPrice.toFixed(2)));
+      
+      // 更新副图数据
+      stockSubChart.data.labels.push(newDateStr);
+      subDatasets[0].data.push(newVolume);
+      
+      // 保持数据点数量
+      if (labels.length > 30) {
+        labels.shift();
+        datasets.forEach(dataset => {
+          dataset.data.shift();
+        });
+        stockSubChart.data.labels.shift();
+        subDatasets.forEach(dataset => {
+          dataset.data.shift();
+        });
+      }
+      
+      // 重新计算MA5、MA10和MA20
+      const closeData = datasets[0].data;
+      const ma5Data = [];
+      const ma10Data = [];
+      const ma20Data = [];
+      
+      for (let i = 0; i < closeData.length; i++) {
+        if (i >= 4) {
+          const ma5 = (closeData[i] + closeData[i-1] + closeData[i-2] + closeData[i-3] + closeData[i-4]) / 5;
+          ma5Data.push(parseFloat(ma5.toFixed(2)));
+        } else {
+          ma5Data.push(null);
+        }
+        
+        if (i >= 9) {
+          const ma10 = (closeData[i] + closeData[i-1] + closeData[i-2] + closeData[i-3] + closeData[i-4] + 
+                        closeData[i-5] + closeData[i-6] + closeData[i-7] + closeData[i-8] + closeData[i-9]) / 10;
+          ma10Data.push(parseFloat(ma10.toFixed(2)));
+        } else {
+          ma10Data.push(null);
+        }
+        
+        if (i >= 19) {
+          let sum = 0;
+          for (let j = 0; j < 20; j++) {
+            sum += closeData[i-j];
+          }
+          const ma20 = sum / 20;
+          ma20Data.push(parseFloat(ma20.toFixed(2)));
+        } else {
+          ma20Data.push(null);
+        }
+      }
+      
+      datasets[1].data = ma5Data;
+      datasets[2].data = ma10Data;
+      datasets[3].data = ma20Data;
+      
+      // 更新图表
+      stockChart.update();
+      stockSubChart.update();
+    }
+    
+    // 启动实时更新
+    function startRealTimeUpdate() {
+      // 清除之前的定时器
+      if (updateInterval) {
+        clearInterval(updateInterval);
+      }
+      
+      // 设置新的定时器
+      updateInterval = setInterval(updateStockPrice, updateSpeed);
+    }
+    
+    // 停止实时更新
+    function stopRealTimeUpdate() {
+      if (updateInterval) {
+        clearInterval(updateInterval);
+        updateInterval = null;
+      }
+    }
+    
+    // 显示股票详情页面
+    function showStockDetailPage(stockSymbol) {
+      document.getElementById('open-account-page').classList.add('hidden');
+      document.getElementById('stock-list-page').classList.add('hidden');
+      document.getElementById('stock-detail-page').classList.remove('hidden');
+      document.getElementById('holdings-page').classList.add('hidden');
+      document.getElementById('transactions-page').classList.add('hidden');
+      document.getElementById('account-page').classList.add('hidden');
+      
+      // 查找选中的股票
+      currentStock = mockStocks.find(stock => stock.symbol === stockSymbol);
+      
+      // 显示或隐藏调整涨幅按钮
+      const adjustChangeBtn = document.getElementById('adjust-change-btn');
+      if (currentStock.custom) {
+        adjustChangeBtn.classList.remove('hidden');
+      } else {
+        adjustChangeBtn.classList.add('hidden');
+      }
+      
+      if (currentStock) {
+        // 更新股票详情
+        document.getElementById('detail-stock-name').textContent = currentStock.name;
+        document.getElementById('detail-stock-symbol').textContent = currentStock.symbol;
+        document.getElementById('detail-stock-market').textContent = currentStock.market;
+        document.getElementById('detail-stock-price').textContent = formatCurrency(currentStock.currentPrice);
+        
+        const changeElement = document.getElementById('detail-stock-change');
+        const changePercentElement = document.getElementById('detail-stock-change-percent');
+        
+        if (currentStock.change >= 0) {
+          changeElement.textContent = '+' + formatNumber(currentStock.change);
+          changePercentElement.textContent = '+' + currentStock.changePercent.toFixed(2) + '%';
+          changeElement.className = 'text-success mr-2';
+          changePercentElement.className = 'text-success';
+        } else {
+          changeElement.textContent = formatNumber(currentStock.change);
+          changePercentElement.textContent = currentStock.changePercent.toFixed(2) + '%';
+          changeElement.className = 'text-danger mr-2';
+          changePercentElement.className = 'text-danger';
+        }
+        
+        // 计算均价
+        const avgPrice = (currentStock.open + currentStock.high + currentStock.low + currentStock.currentPrice) / 4;
+        // 计算成交额
+        const amount = currentStock.volume * currentStock.currentPrice;
+        // 模拟换手率
+        const turnover = (Math.random() * 2 + 0.1).toFixed(2);
+        
+        // 更新详细数据
+        document.getElementById('detail-open').textContent = formatNumber(currentStock.open);
+        document.getElementById('detail-high').textContent = formatNumber(currentStock.high);
+        document.getElementById('detail-low').textContent = formatNumber(currentStock.low);
+        document.getElementById('detail-avg-price').textContent = formatNumber(avgPrice);
+        document.getElementById('detail-volume').textContent = formatLargeNumber(currentStock.volume);
+        document.getElementById('detail-amount').textContent = formatLargeNumber(amount);
+        document.getElementById('detail-turnover').textContent = turnover + '%';
+        document.getElementById('detail-market-cap').textContent = formatLargeNumber(currentStock.marketCap);
+        
+        // 更新买入表单
+        document.getElementById('buy-price').value = currentStock.currentPrice;
+        document.getElementById('buy-shares').value = 100;
+        document.getElementById('buy-available-funds').textContent = formatCurrency(currentUser.balance);
+        updateBuyTotalAmount();
+        
+        // 更新卖出表单
+        document.getElementById('sell-price').value = currentStock.currentPrice;
+        document.getElementById('sell-shares').value = 100;
+        
+        const holding = getHolding(currentStock.symbol);
+        if (holding) {
+          document.getElementById('sell-available-shares').textContent = holding.shares + '股';
+          
+          // 更新持仓信息
+          document.getElementById('holding-shares').textContent = holding.shares + '股';
+          document.getElementById('holding-cost').textContent = formatNumber(holding.avgCost);
+          
+          const currentValue = holding.shares * currentStock.currentPrice;
+          document.getElementById('holding-value').textContent = formatCurrency(currentValue);
+          
+          const profit = currentValue - (holding.shares * holding.avgCost);
+          const profitPercent = (profit / (holding.shares * holding.avgCost)) * 100;
+          
+          const profitElement = document.getElementById('holding-profit');
+          const profitPercentElement = document.getElementById('holding-profit-percent');
+          
+          if (profit >= 0) {
+            profitElement.textContent = '+' + formatCurrency(profit);
+            profitPercentElement.textContent = '+' + profitPercent.toFixed(2) + '%';
+            profitElement.className = 'text-success';
+            profitPercentElement.className = 'text-success';
+          } else {
+            profitElement.textContent = formatCurrency(profit);
+            profitPercentElement.textContent = profitPercent.toFixed(2) + '%';
+            profitElement.className = 'text-danger';
+            profitPercentElement.className = 'text-danger';
+          }
+        } else {
+          document.getElementById('sell-available-shares').textContent = '0股';
+          document.getElementById('sell-submit').disabled = true;
+          document.getElementById('sell-submit').classList.add('disabled:bg-gray-600', 'disabled:cursor-not-allowed');
+          
+          // 更新持仓信息为0
+          document.getElementById('holding-shares').textContent = '0股';
+          document.getElementById('holding-cost').textContent = '0.00';
+          document.getElementById('holding-value').textContent = '0.00';
+          document.getElementById('holding-profit').textContent = '0.00';
+          document.getElementById('holding-profit').className = 'text-success';
+          document.getElementById('holding-profit-percent').textContent = '0.00%';
+          document.getElementById('holding-profit-percent').className = 'text-success';
+        }
+        
+        updateSellTotalAmount();
+        
+        // 渲染K线图
+        renderStockChart();
+        
+        // 添加进入动画
+        setTimeout(() => {
+          document.getElementById('stock-detail-page').classList.add('page-enter-active');
+          document.getElementById('stock-detail-page').classList.remove('page-enter');
+        }, 10);
+      }
+    }
+    
+    // 显示持仓页面
+    function showHoldingsPage() {
+      document.getElementById('open-account-page').classList.add('hidden');
+      document.getElementById('stock-list-page').classList.add('hidden');
+      document.getElementById('stock-detail-page').classList.add('hidden');
+      document.getElementById('holdings-page').classList.remove('hidden');
+      document.getElementById('transactions-page').classList.add('hidden');
+      document.getElementById('account-page').classList.add('hidden');
+      
+      // 更新持仓总市值
+      document.getElementById('holdings-total-value').textContent = formatCurrency(calculateHoldingsValue());
+      
+      // 渲染持仓列表
+      renderHoldingsList();
+      
+      // 添加进入动画
+      setTimeout(() => {
+        document.getElementById('holdings-page').classList.add('page-enter-active');
+        document.getElementById('holdings-page').classList.remove('page-enter');
+      }, 10);
+    }
+    
+    // 显示交易记录页面
+    function showTransactionsPage() {
+      document.getElementById('open-account-page').classList.add('hidden');
+      document.getElementById('stock-list-page').classList.add('hidden');
+      document.getElementById('stock-detail-page').classList.add('hidden');
+      document.getElementById('holdings-page').classList.add('hidden');
+      document.getElementById('transactions-page').classList.remove('hidden');
+      document.getElementById('account-page').classList.add('hidden');
+      
+      // 渲染交易记录列表
+      renderTransactionsList();
+      
+      // 添加进入动画
+      setTimeout(() => {
+        document.getElementById('transactions-page').classList.add('page-enter-active');
+        document.getElementById('transactions-page').classList.remove('page-enter');
+      }, 10);
+    }
+    
+    // 显示账户页面
+    function showAccountPage() {
+      document.getElementById('open-account-page').classList.add('hidden');
+      document.getElementById('stock-list-page').classList.add('hidden');
+      document.getElementById('stock-detail-page').classList.add('hidden');
+      document.getElementById('holdings-page').classList.add('hidden');
+      document.getElementById('transactions-page').classList.add('hidden');
+      document.getElementById('account-page').classList.remove('hidden');
+      
+      // 更新账户信息
+      document.getElementById('account-phone').textContent = currentUser.phoneNumber.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+      document.getElementById('account-risk-level').textContent = currentUser.riskLevel;
+      document.getElementById('account-created-at').textContent = new Date(currentUser.createdAt).toLocaleString('zh-CN');
+      document.getElementById('account-total-assets').textContent = formatCurrency(currentUser.balance + calculateHoldingsValue());
+      document.getElementById('account-available-funds').textContent = formatCurrency(currentUser.balance);
+      document.getElementById('account-holdings-value').textContent = formatCurrency(calculateHoldingsValue());
+      
+      const totalProfit = calculateTotalProfit();
+      const profitElement = document.getElementById('account-total-profit');
+      profitElement.textContent = formatCurrency(totalProfit);
+      profitElement.className = totalProfit >= 0 ? 'text-success font-medium' : 'text-danger font-medium';
+      
+      // 添加进入动画
+      setTimeout(() => {
+        document.getElementById('account-page').classList.add('page-enter-active');
+        document.getElementById('account-page').classList.remove('page-enter');
+      }, 10);
+    }
+    
+    // 渲染股票列表
+    function renderStockList() {
+      const stockListElement = document.getElementById('stock-list');
+      stockListElement.innerHTML = '';
+      
+      mockStocks.forEach(stock => {
+        const stockItem = document.createElement('div');
+        stockItem.className = 'grid grid-cols-12 py-3 px-4 border-b border-dark-lighter hover:bg-dark hover:bg-opacity-30 transition-colors cursor-pointer hover-scale';
+        stockItem.dataset.symbol = stock.symbol;
+        
+        let changeClass = stock.change >= 0 ? 'text-success' : 'text-danger';
+        let changeSign = stock.change >= 0 ? '+' : '';
+        
+        stockItem.innerHTML = `
+          <div class="col-span-4 md:col-span-3">
+            <div class="font-medium text-white">${stock.name}</div>
+            <div class="text-xs text-gray-400">${stock.symbol}</div>
+            <div class="text-xs ${getRiskLevelClass(stock.riskLevel)}">${stock.riskLevel}</div>
+          </div>
+          <div class="col-span-3 md:col-span-2 text-white font-medium">${formatNumber(stock.currentPrice)}</div>
+          <div class="col-span-2 md:col-span-2 ${changeClass}">${changeSign}${stock.changePercent.toFixed(2)}%</div>
+          <div class="col-span-3 md:col-span-2 ${changeClass}">${changeSign}${formatNumber(stock.change)}</div>
+          <div class="hidden md:flex md:col-span-3 items-center justify-end">
+            <button class="bg-accent hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs transition-colors view-stock-btn" data-symbol="${stock.symbol}">
+              查看
+            </button>
+          </div>
+        `;
+        
+        stockListElement.appendChild(stockItem);
+        
+        // 添加点击事件
+        stockItem.addEventListener('click', () => {
+          showStockDetailPage(stock.symbol);
+        });
+        
+        // 为查看按钮添加单独的点击事件，防止冒泡
+        const viewBtn = stockItem.querySelector('.view-stock-btn');
+        if (viewBtn) {
+          viewBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showStockDetailPage(stock.symbol);
+          });
+        }
+      });
+      
+      // 初始化原始股票顺序
+      setTimeout(initOriginalStockOrder, 0);
+    }
+    
+    // 渲染K线图
+    function renderStockChart() {
+      const ctx = document.getElementById('stock-chart').getContext('2d');
+      const subCtx = document.getElementById('stock-sub-chart').getContext('2d');
+      
+      // 如果已经有图表实例，先销毁
+      if (stockChart) {
+        stockChart.destroy();
+      }
+      if (stockSubChart) {
+        stockSubChart.destroy();
+      }
+      
+      // 根据当前选择的时间周期获取数据
+      let chartData;
+      if (currentTimePeriod === 'day') {
+        chartData = currentStock.historicalData.slice(-30); // 最近30天
+      } else if (currentTimePeriod === '5day') {
+        chartData = currentStock.historicalData.slice(-15); // 最近15天
+      } else if (currentTimePeriod === 'week') {
+        // 模拟周K数据，每7天取一个点
+        chartData = [];
+        for (let i = 0; i < currentStock.historicalData.length; i += 7) {
+          chartData.push(currentStock.historicalData[i]);
+        }
+        chartData = chartData.slice(-12); // 最近12周
+      } else if (currentTimePeriod === 'month') {
+        // 模拟月K数据，每30天取一个点
+        chartData = [];
+        for (let i = 0; i < currentStock.historicalData.length; i += 30) {
+          chartData.push(currentStock.historicalData[i]);
+        }
+        chartData = chartData.slice(-12); // 最近12个月
+      } else {
+        // 模拟年K数据，每365天取一个点
+        chartData = [];
+        for (let i = 0; i < currentStock.historicalData.length; i += 365) {
+          chartData.push(currentStock.historicalData[i]);
+        }
+        chartData = chartData.slice(-10); // 最近10年
+      }
+      
+      // 准备图表数据
+      const labels = chartData.map(item => item.date);
+      const openData = chartData.map(item => item.open);
+      const highData = chartData.map(item => item.high);
+      const lowData = chartData.map(item => item.low);
+      const closeData = chartData.map(item => item.close);
+      const volumeData = chartData.map(item => item.volume);
+      
+      // 计算MA5、MA10和MA20
+      const ma5Data = [];
+      const ma10Data = [];
+      const ma20Data = [];
+      
+      for (let i = 0; i < closeData.length; i++) {
+        if (i >= 4) {
+          const ma5 = (closeData[i] + closeData[i-1] + closeData[i-2] + closeData[i-3] + closeData[i-4]) / 5;
+          ma5Data.push(parseFloat(ma5.toFixed(2)));
+        } else {
+          ma5Data.push(null);
+        }
+        
+        if (i >= 9) {
+          const ma10 = (closeData[i] + closeData[i-1] + closeData[i-2] + closeData[i-3] + closeData[i-4] + 
+                        closeData[i-5] + closeData[i-6] + closeData[i-7] + closeData[i-8] + closeData[i-9]) / 10;
+          ma10Data.push(parseFloat(ma10.toFixed(2)));
+        } else {
+          ma10Data.push(null);
+        }
+        
+        if (i >= 19) {
+          let sum = 0;
+          for (let j = 0; j < 20; j++) {
+            sum += closeData[i-j];
+          }
+          const ma20 = sum / 20;
+          ma20Data.push(parseFloat(ma20.toFixed(2)));
+        } else {
+          ma20Data.push(null);
+        }
+      }
+      
+      // 确定线条颜色，根据股票涨跌情况
+      const isUp = currentStock.change >= 0;
+      const lineColor = isUp ? '#10b981' : '#ef4444';
+      const bgColor = isUp ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)';
+      
+      // 创建主图（K线图）
+      stockChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: '收盘价',
+              data: closeData,
+              borderColor: lineColor,
+              backgroundColor: bgColor,
+              borderWidth: 2,
+              fill: true,
+              tension: 0.1
+            },
+            {
+              label: 'MA5',
+              data: ma5Data,
+              borderColor: '#3b82f6',
+              borderWidth: 1.5,
+              fill: false,
+              tension: 0.1
+            },
+            {
+              label: 'MA10',
+              data: ma10Data,
+              borderColor: '#f59e0b',
+              borderWidth: 1.5,
+              fill: false,
+              tension: 0.1
+            },
+            {
+              label: 'MA20',
+              data: ma20Data,
+              borderColor: '#ef4444',
+              borderWidth: 1.5,
+              fill: false,
+              tension: 0.1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                color: '#e2e8f0'
+              }
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              callbacks: {
+                label: function(context) {
+                  let label = context.dataset.label || '';
+                  if (label) {
+                    label += ': ';
+                  }
+                  if (context.parsed.y !== null) {
+                    label += formatNumber(context.parsed.y);
+                  }
+                  return label;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                color: 'rgba(75, 85, 99, 0.2)'
+              },
+              ticks: {
+                color: '#9ca3af',
+                maxRotation: 0,
+                autoSkip: true,
+                maxTicksLimit: 10
+              }
+            },
+            y: {
+              grid: {
+                color: 'rgba(75, 85, 99, 0.2)'
+              },
+              ticks: {
+                color: '#9ca3af'
+              }
+            }
+          }
+        }
+      });
+      
+      // 创建副图（成交量）
+      stockSubChart = new Chart(subCtx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: '成交量',
+              data: volumeData,
+              backgroundColor: function(context) {
+                const index = context.dataIndex;
+                const current = closeData[index];
+                const previous = index > 0 ? closeData[index - 1] : current;
+                return current >= previous ? 'rgba(16, 185, 129, 0.6)' : 'rgba(239, 68, 68, 0.6)';
+              },
+              borderColor: function(context) {
+                const index = context.dataIndex;
+                const current = closeData[index];
+                const previous = index > 0 ? closeData[index - 1] : current;
+                return current >= previous ? 'rgba(16, 185, 129, 1)' : 'rgba(239, 68, 68, 1)';
+              },
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              callbacks: {
+                label: function(context) {
+                  return '成交量: ' + formatLargeNumber(context.parsed.y);
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                display: false
+              },
+              ticks: {
+                display: false
+              }
+            },
+            y: {
+              grid: {
+                color: 'rgba(75, 85, 99, 0.2)'
+              },
+              ticks: {
+                color: '#9ca3af',
+                callback: function(value) {
+                  return formatLargeNumber(value);
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+    
+    // 渲染持仓列表
+    function renderHoldingsList() {
+      const holdingsListElement = document.getElementById('holdings-list');
+      holdingsListElement.innerHTML = '';
+      
+      if (!currentUser.holdings || currentUser.holdings.length === 0) {
+        holdingsListElement.innerHTML = `
+          <div class="grid grid-cols-12 py-3 px-4 border-b border-dark-lighter">
+            <div class="col-span-12 text-center text-gray-400 py-8">
+              暂无持仓，请先买入股票
+            </div>
+          </div>
+        `;
+        return;
+      }
+      
+      currentUser.holdings.forEach(holding => {
+        const stock = mockStocks.find(s => s.symbol === holding.symbol);
+        if (!stock) return;
+        
+        const profit = holding.shares * (stock.currentPrice - holding.avgCost);
+        const profitPercent = (profit / (holding.avgCost * holding.shares)) * 100;
+        
+        const holdingItem = document.createElement('div');
+        holdingItem.className = 'grid grid-cols-12 py-3 px-4 border-b border-dark-lighter hover:bg-dark hover:bg-opacity-30 transition-colors cursor-pointer hover-scale';
+        holdingItem.dataset.symbol = stock.symbol;
+        
+        let profitClass = profit >= 0 ? 'text-success' : 'text-danger';
+        let profitSign = profit >= 0 ? '+' : '';
+        
+        holdingItem.innerHTML = `
+          <div class="col-span-4">
+            <div class="font-medium text-white">${stock.name}</div>
+            <div class="text-xs text-gray-400">${stock.symbol}</div>
+          </div>
+          <div class="col-span-2 hidden md:flex items-center justify-center">
+            <span class="text-white">${holding.shares}股</span>
+          </div>
+          <div class="col-span-3 md:col-span-2 flex flex-col md:items-center">
+            <span class="text-white font-medium">${formatNumber(stock.currentPrice)}</span>
+            <span class="text-xs text-gray-400">成本: ${formatNumber(holding.avgCost)}</span>
+          </div>
+          <div class="col-span-3 md:col-span-2 ${profitClass}">
+            <div class="font-medium">${profitSign}${formatNumber(profit)}</div>
+            <div class="text-xs">${profitSign}${profitPercent.toFixed(2)}%</div>
+          </div>
+          <div class="col-span-2 md:flex md:col-span-2 items-center justify-center">
+            <button class="bg-accent hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs transition-colors view-stock-btn" data-symbol="${stock.symbol}">
+              交易
+            </button>
+          </div>
+        `;
+        
+        holdingsListElement.appendChild(holdingItem);
+        
+        // 添加点击事件
+        holdingItem.addEventListener('click', () => {
+          showStockDetailPage(stock.symbol);
+        });
+        
+        // 为交易按钮添加单独的点击事件，防止冒泡
+        const viewBtn = holdingItem.querySelector('.view-stock-btn');
+        if (viewBtn) {
+          viewBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showStockDetailPage(stock.symbol);
+          });
+        }
+      });
+    }
+    
+    // 渲染交易记录列表
+    function renderTransactionsList(filter = 'all') {
+      const transactionsListElement = document.getElementById('transactions-list');
+      transactionsListElement.innerHTML = '';
+      
+      if (!currentUser.transactions || currentUser.transactions.length === 0) {
+        transactionsListElement.innerHTML = `
+          <div class="grid grid-cols-12 py-3 px-4 border-b border-dark-lighter">
+            <div class="col-span-12 text-center text-gray-400 py-8">
+              暂无交易记录
+            </div>
+          </div>
+        `;
+        return;
+      }
+      
+      // 过滤交易记录
+      let filteredTransactions = currentUser.transactions;
+      if (filter !== 'all') {
+        filteredTransactions = currentUser.transactions.filter(tx => tx.type === filter);
+      }
+      
+      // 按时间倒序排序
+      filteredTransactions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      
+      filteredTransactions.forEach(transaction => {
+        const txItem = document.createElement('div');
+        txItem.className = 'grid grid-cols-12 py-3 px-4 border-b border-dark-lighter hover:bg-dark hover:bg-opacity-30 transition-colors';
+        
+        const date = new Date(transaction.timestamp);
+        const formattedDate = `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+        
+        const typeClass = transaction.type === 'buy' ? 'text-success' : 'text-danger';
+        const typeText = transaction.type === 'buy' ? '买入' : '卖出';
+        
+        txItem.innerHTML = `
+          <div class="col-span-4 md:col-span-2 text-gray-400">${formattedDate}</div>
+          <div class="col-span-4 md:col-span-2">
+            <div class="font-medium text-white">${transaction.name}</div>
+            <div class="text-xs text-gray-400">${transaction.symbol}</div>
+          </div>
+          <div class="col-span-2 md:col-span-1 ${typeClass} font-medium">${typeText}</div>
+          <div class="col-span-2 md:col-span-2 hidden md:flex items-center justify-center text-white">${formatNumber(transaction.price)}</div>
+          <div class="col-span-3 md:col-span-2 flex items-center justify-center text-white">${transaction.shares}股</div>
+          <div class="col-span-3 md:col-span-3 text-white font-medium">${formatCurrency(transaction.amount)}</div>
+        `;
+        
+        transactionsListElement.appendChild(txItem);
+      });
+    }
+    
+    // 计算持仓总市值
+    function calculateHoldingsValue() {
+      if (!currentUser.holdings || currentUser.holdings.length === 0) {
+        return 0;
+      }
+      
+      return currentUser.holdings.reduce((total, holding) => {
+        const stock = mockStocks.find(s => s.symbol === holding.symbol);
+        if (stock) {
+          return total + (holding.shares * stock.currentPrice);
+        }
+        return total;
+      }, 0);
+    }
+    
+    // 计算总盈亏
+    function calculateTotalProfit() {
+      if (!currentUser.holdings || currentUser.holdings.length === 0) {
+        return 0;
+      }
+      
+      return currentUser.holdings.reduce((total, holding) => {
+        const stock = mockStocks.find(s => s.symbol === holding.symbol);
+        if (stock) {
+          return total + (holding.shares * (stock.currentPrice - holding.avgCost));
+        }
+        return total;
+      }, 0);
+    }
+    
+    // 获取指定股票的持仓信息
+    function getHolding(symbol) {
+      if (!currentUser.holdings) {
+        currentUser.holdings = [];
+        return null;
+      }
+      
+      return currentUser.holdings.find(holding => holding.symbol === symbol);
+    }
+    
+    // 更新买入交易金额
+    function updateBuyTotalAmount() {
+      const price = parseFloat(document.getElementById('buy-price').value) || 0;
+      const shares = parseInt(document.getElementById('buy-shares').value) || 0;
+      const leverage = parseInt(document.getElementById('buy-leverage').value) || 1;
+      const total = price * shares;
+      const actualCost = total / leverage;
+      
+      document.getElementById('buy-total-amount').textContent = formatCurrency(total) + ` (实际支付: ${formatCurrency(actualCost)})`;
+      
+      // 检查余额是否足够
+      const buyButton = document.getElementById('buy-submit');
+      if (actualCost > currentUser.balance || shares <= 0 || price <= 0) {
+        buyButton.disabled = true;
+        buyButton.classList.add('disabled:bg-gray-600', 'disabled:cursor-not-allowed');
+      } else {
+        buyButton.disabled = false;
+        buyButton.classList.remove('disabled:bg-gray-600', 'disabled:cursor-not-allowed');
+      }
+    }
+    
+    // 更新卖出交易金额
+    function updateSellTotalAmount() {
+      const price = parseFloat(document.getElementById('sell-price').value) || 0;
+      const shares = parseInt(document.getElementById('sell-shares').value) || 0;
+      const leverage = parseInt(document.getElementById('buy-leverage').value) || 1; // 使用与买入相同的杠杆
+      const total = price * shares;
+      const actualProceeds = total / leverage;
+      
+      document.getElementById('sell-total-amount').textContent = formatCurrency(total) + ` (实际到账: ${formatCurrency(actualProceeds)})`;
+      
+      // 检查持仓是否足够
+      const sellButton = document.getElementById('sell-submit');
+      const holding = getHolding(currentStock.symbol);
+      
+      if (!holding || shares > holding.shares || shares <= 0 || price <= 0) {
+        sellButton.disabled = true;
+        sellButton.classList.add('disabled:bg-gray-600', 'disabled:cursor-not-allowed');
+      } else {
+        sellButton.disabled = false;
+        sellButton.classList.remove('disabled:bg-gray-600', 'disabled:cursor-not-allowed');
+      }
+    }
+    
+    // 执行买入操作
+    function executeBuy() {
+      const price = parseFloat(document.getElementById('buy-price').value);
+      const shares = parseInt(document.getElementById('buy-shares').value);
+      const leverage = parseInt(document.getElementById('buy-leverage').value) || 1;
+      const total = price * shares;
+      const actualCost = total / leverage;
+      
+      if (actualCost > currentUser.balance || shares <= 0 || price <= 0) {
+        return;
+      }
+      
+      // 更新余额
+      currentUser.balance -= actualCost;
+      
+      // 更新持仓
+      const holding = getHolding(currentStock.symbol);
+      if (holding) {
+        // 已有持仓，更新平均成本
+        const totalShares = holding.shares + shares;
+        const totalCost = (holding.shares * holding.avgCost) + total;
+        holding.avgCost = totalCost / totalShares;
+        holding.shares = totalShares;
+      } else {
+        // 新增持仓
+        if (!currentUser.holdings) {
+          currentUser.holdings = [];
+        }
+        
+        currentUser.holdings.push({
+          symbol: currentStock.symbol,
+          name: currentStock.name,
+          shares: shares,
+          avgCost: price
+        });
+      }
+      
+      // 记录交易
+      if (!currentUser.transactions) {
+        currentUser.transactions = [];
+      }
+      
+      currentUser.transactions.push({
+        id: 'tx' + Date.now(),
+        symbol: currentStock.symbol,
+        name: currentStock.name,
+        type: 'buy',
+        price: price,
+        shares: shares,
+        amount: total,
+        timestamp: new Date().toISOString()
+      });
+      
+      // 保存用户数据
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+      
+      // 显示交易成功提示
+      showTradeSuccessModal('买入成功', `您已成功买入 ${shares} 股 ${currentStock.name} 股票`);
+      
+      // 更新页面数据
+      document.getElementById('buy-available-funds').textContent = formatCurrency(currentUser.balance);
+      updateBuyTotalAmount();
+    }
+    
+    // 执行卖出操作
+    function executeSell() {
+      const price = parseFloat(document.getElementById('sell-price').value);
+      const shares = parseInt(document.getElementById('sell-shares').value);
+      const leverage = parseInt(document.getElementById('buy-leverage').value) || 1; // 使用与买入相同的杠杆
+      const total = price * shares;
+      const actualProceeds = total / leverage;
+      
+      const holding = getHolding(currentStock.symbol);
+      if (!holding || shares > holding.shares || shares <= 0 || price <= 0) {
+        return;
+      }
+      
+      // 更新余额
+      currentUser.balance += actualProceeds;
+      
+      // 更新持仓
+      holding.shares -= shares;
+      if (holding.shares === 0) {
+        // 清空持仓
+        currentUser.holdings = currentUser.holdings.filter(h => h.symbol !== currentStock.symbol);
+      }
+      
+      // 记录交易
+      currentUser.transactions.push({
+        id: 'tx' + Date.now(),
+        symbol: currentStock.symbol,
+        name: currentStock.name,
+        type: 'sell',
+        price: price,
+        shares: shares,
+        amount: total,
+        timestamp: new Date().toISOString()
+      });
+      
+      // 保存用户数据
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+      
+      // 显示交易成功提示
+      showTradeSuccessModal('卖出成功', `您已成功卖出 ${shares} 股 ${currentStock.name} 股票`);
+      
+      // 更新页面数据
+      document.getElementById('sell-available-shares').textContent = holding.shares > 0 ? holding.shares + '股' : '0股';
+      updateSellTotalAmount();
+    }
+    
+    // 显示交易成功提示
+    function showTradeSuccessModal(title, message) {
+      const modal = document.getElementById('trade-success-modal');
+      const titleElement = document.getElementById('trade-success-title');
+      const messageElement = document.getElementById('trade-success-message');
+      
+      titleElement.textContent = title;
+      messageElement.textContent = message;
+      
+      modal.classList.remove('hidden');
+    }
+    
+    // 隐藏交易成功提示
+    function hideTradeSuccessModal() {
+      const modal = document.getElementById('trade-success-modal');
+      modal.classList.add('hidden');
+    }
+    
+    // 重置账户
+    function resetAccount() {
+      if (confirm('确定要重置账户吗？这将清除所有交易记录和持仓信息。')) {
+        // 保留用户基本信息，重置资金和交易记录
+        currentUser.balance = parseInt(document.getElementById('selected-amount').value);
+        currentUser.holdings = [];
+        currentUser.transactions = [];
+        
+        // 保存用户数据
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        // 返回股票列表页面
+        showStockListPage();
+      }
+    }
+    
+    // 退出登录
+    function logout() {
+      if (confirm('确定要退出登录吗？')) {
+        localStorage.removeItem('currentUser');
+        currentUser = null;
+        showOpenAccountPage();
+      }
+    }
+    
+    // 初始化粒子背景
+    function initParticlesBackground() {
+      const canvas = document.getElementById('particles-bg');
+      const ctx = canvas.getContext('2d');
+      
+      // 设置画布大小
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      
+      // 创建粒子
+      const particles = [];
+      const particleCount = 100;
+      
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: Math.random() * 2 + 1,
+          color: `rgba(${Math.floor(Math.random()*80+180)}, ${Math.floor(Math.random()*80+180)}, ${Math.floor(Math.random()*80+180)}, 0.5)`,
+          speedX: Math.random() * 0.5 - 0.25,
+          speedY: Math.random() * 0.5 - 0.25
+        });
+      }
+      
+      // 鼠标位置追踪
+      let mouseX = 0, mouseY = 0;
+      document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      });
+      
+      // 动画循环
+      function animate() {
+        requestAnimationFrame(animate);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        particles.forEach(p => {
+          // 更新位置
+          p.x += p.speedX;
+          p.y += p.speedY;
+          
+          // 边界检查
+          if (p.x > canvas.width) p.x = 0;
+          if (p.x < 0) p.x = canvas.width;
+          if (p.y > canvas.height) p.y = 0;
+          if (p.y < 0) p.y = canvas.height;
+          
+          // 鼠标交互 - 靠近鼠标的粒子微微偏移
+          const dx = p.x - mouseX;
+          const dy = p.y - mouseY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 100) {
+            p.x += dx * 0.01;
+            p.y += dy * 0.01;
+          }
+          
+          // 绘制粒子
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.fill();
+        });
+        
+        // 连接临近粒子
+        connectParticles();
+      }
+      
+      // 连接临近的粒子
+      function connectParticles() {
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            if (dist < 120) {
+              ctx.beginPath();
+              ctx.strokeStyle = `rgba(200, 200, 255, ${0.2 * (1 - dist/120)})`;
+              ctx.lineWidth = 0.5;
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+      }
+      
+      // 启动动画
+      animate();
+    }
+    
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      // 初始化粒子背景
+      initParticlesBackground();
+      
+      // 初始化股票数据
+      initAllStocksData();
+      
+      // 初始化用户数据
+      initUserData();
+      
+      // 启动实时更新，确保所有股票都能实时更新价格
+      startRealTimeUpdate();
+      
+      // 速度设置下拉菜单
+      const speedSettingsBtn = document.getElementById('speed-settings-btn');
+      const speedSettingsDropdown = document.getElementById('speed-settings-dropdown');
+      
+      // 点击小齿轮图标显示/隐藏下拉菜单
+      speedSettingsBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        speedSettingsDropdown.classList.toggle('hidden');
+      });
+      
+      // 点击页面其他地方隐藏下拉菜单
+      document.addEventListener('click', function() {
+        speedSettingsDropdown.classList.add('hidden');
+      });
+      
+      // 点击下拉菜单内部不触发隐藏
+      speedSettingsDropdown.addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+      
+      // 选择速度选项
+      const speedOptions = document.querySelectorAll('.speed-option');
+      speedOptions.forEach(option => {
+        option.addEventListener('click', function(e) {
+          e.preventDefault();
+          const speed = parseInt(this.dataset.speed);
+          updateSpeed = speed;
+          
+          // 重新启动实时更新，应用新的速度设置
+          startRealTimeUpdate();
+          
+          // 隐藏下拉菜单
+          speedSettingsDropdown.classList.add('hidden');
+        });
+      });
+      
+      // 自定义股票按钮点击事件
+      const customStockBtn = document.getElementById('custom-stock-btn');
+      const customStockModal = document.getElementById('custom-stock-modal');
+      const cancelCustomStockBtn = document.getElementById('cancel-custom-stock');
+      const createCustomStockBtn = document.getElementById('create-custom-stock');
+      
+      // 打开自定义股票模态框
+      customStockBtn.addEventListener('click', function() {
+        customStockModal.classList.remove('hidden');
+      });
+      
+      // 关闭自定义股票模态框
+      cancelCustomStockBtn.addEventListener('click', function() {
+        customStockModal.classList.add('hidden');
+      });
+      
+      // 创建自定义股票
+      createCustomStockBtn.addEventListener('click', function() {
+        const name = document.getElementById('custom-stock-name').value.trim();
+        const symbol = document.getElementById('custom-stock-symbol').value.trim();
+        const price = parseFloat(document.getElementById('custom-stock-price').value);
+        const changePercent = parseFloat(document.getElementById('custom-stock-change').value);
+        
+        if (!name || !symbol || isNaN(price) || isNaN(changePercent)) {
+          alert('请填写所有必填字段并确保价格和涨跌幅为有效数字');
+          return;
+        }
+        
+        // 检查股票代码是否已存在
+        const existingStock = mockStocks.find(stock => stock.symbol === symbol);
+        if (existingStock) {
+          alert('该股票代码已存在，请使用其他代码');
+          return;
+        }
+        
+        // 计算涨跌幅和涨跌额
+        const change = (price * changePercent) / 100;
+        const currentPrice = price + change;
+        
+        // 创建新的自定义股票
+        const newStock = {
+          symbol: symbol,
+          name: name,
+          market: '自定义',
+          currentPrice: parseFloat(currentPrice.toFixed(2)),
+          change: parseFloat(change.toFixed(2)),
+          changePercent: parseFloat(changePercent.toFixed(2)),
+          volume: 1000000,
+          marketCap: price * 10000000,
+          open: price,
+          high: Math.max(price, currentPrice),
+          low: Math.min(price, currentPrice),
+          close: currentPrice,
+          historicalData: [],
+          custom: true,
+          customChangePercent: changePercent // 存储自定义涨跌幅
+        };
+        
+        // 生成历史数据
+        newStock.historicalData = generateHistoricalData(newStock);
+        
+        // 添加到股票列表
+        mockStocks.push(newStock);
+        
+        // 重新渲染股票列表（无论当前是否显示股票列表页面）
+        renderStockList();
+        
+        // 关闭模态框
+        customStockModal.classList.add('hidden');
+        
+        // 清空表单
+        document.getElementById('custom-stock-name').value = '';
+        document.getElementById('custom-stock-symbol').value = '';
+        document.getElementById('custom-stock-price').value = '';
+        document.getElementById('custom-stock-change').value = '';
+      });
+      
+      // 调整涨幅按钮点击事件
+      const adjustChangeBtn = document.getElementById('adjust-change-btn');
+      const adjustChangeModal = document.getElementById('adjust-change-modal');
+      const cancelAdjustChangeBtn = document.getElementById('cancel-adjust-change');
+      const confirmAdjustChangeBtn = document.getElementById('confirm-adjust-change');
+      
+      // 打开调整涨幅模态框
+      adjustChangeBtn.addEventListener('click', function() {
+        if (currentStock && currentStock.custom) {
+          // 填充当前涨跌幅
+          document.getElementById('adjust-stock-change').value = currentStock.customChangePercent || 0;
+          adjustChangeModal.classList.remove('hidden');
+        }
+      });
+      
+      // 关闭调整涨幅模态框
+      cancelAdjustChangeBtn.addEventListener('click', function() {
+        adjustChangeModal.classList.add('hidden');
+      });
+      
+      // 确认调整涨幅
+      confirmAdjustChangeBtn.addEventListener('click', function() {
+        if (!currentStock || !currentStock.custom) return;
+        
+        const changePercent = parseFloat(document.getElementById('adjust-stock-change').value);
+        if (isNaN(changePercent)) {
+          alert('请输入有效的涨跌幅');
+          return;
+        }
+        
+        // 更新股票的自定义涨跌幅
+        currentStock.customChangePercent = changePercent;
+        
+        // 关闭模态框
+        adjustChangeModal.classList.add('hidden');
+      });
+      
+
+      
+      // 监听手机号码输入，启用立即开户按钮
+      document.getElementById('phone').addEventListener('input', function() {
+        const phone = this.value;
+        const submitBtn = document.getElementById('submit-account');
+        
+        // 简单的手机号码验证
+        if (phone.length === 11) {
+          submitBtn.disabled = false;
+        } else {
+          submitBtn.disabled = true;
+        }
+      });
+      
+      // 开户表单提交
+      document.getElementById('account-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const phone = document.getElementById('phone').value;
+        const riskLevel = document.getElementById('selected-risk-level').value;
+        
+        // 创建用户对象，初始余额为0
+        currentUser = {
+          userId: 'user_' + Date.now(),
+          phoneNumber: phone,
+          riskLevel: riskLevel,
+          balance: 0,
+          holdings: [],
+          transactions: [],
+          createdAt: new Date().toISOString()
+        };
+        
+        // 保存用户数据
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        // 跳转到股票列表页面
+        showStockListPage();
+      });
+      
+      // 搜索防抖函数
+      function debounce(func, wait) {
+        let timeout;
+        return function() {
+          const context = this;
+          const args = arguments;
+          clearTimeout(timeout);
+          timeout = setTimeout(() => func.apply(context, args), wait);
+        };
+      }
+      
+      // 股票搜索函数
+      function searchStocks() {
+        const searchTerm = document.getElementById('stock-search').value.toLowerCase();
+        const stockItems = Array.from(document.querySelectorAll('#stock-list > div'));
+        
+        if (!searchTerm) {
+          // 如果搜索框为空，显示所有股票并恢复原始顺序
+          stockItems.forEach(item => {
+            item.classList.remove('hidden');
+            
+            // 恢复原始文本，移除高亮
+            const nameElement = item.querySelector('.font-medium');
+            if (nameElement.dataset.originalText) {
+              nameElement.textContent = nameElement.dataset.originalText;
+              delete nameElement.dataset.originalText;
+            }
+            
+            const symbolElement = item.querySelector('.text-xs.text-gray-400');
+            if (symbolElement.dataset.originalText) {
+              symbolElement.textContent = symbolElement.dataset.originalText;
+              delete symbolElement.dataset.originalText;
+            }
+          });
+          
+          // 恢复原始顺序
+          if (originalStockOrder.length > 0) {
+            const stockList = document.getElementById('stock-list');
+            originalStockOrder.forEach(item => {
+              stockList.appendChild(item);
+            });
+          }
+          return;
+        }
+        
+        // 对股票进行排序，优先显示更匹配的结果
+        stockItems.sort((a, b) => {
+          const symbolA = a.dataset.symbol.toLowerCase();
+          const nameA = a.querySelector('.font-medium').textContent.toLowerCase();
+          const symbolB = b.dataset.symbol.toLowerCase();
+          const nameB = b.querySelector('.font-medium').textContent.toLowerCase();
+          
+          // 计算匹配得分
+          const scoreA = (symbolA === searchTerm ? 10 : symbolA.startsWith(searchTerm) ? 5 : symbolA.includes(searchTerm) ? 1 : 0) +
+                        (nameA === searchTerm ? 10 : nameA.startsWith(searchTerm) ? 5 : nameA.includes(searchTerm) ? 1 : 0);
+          const scoreB = (symbolB === searchTerm ? 10 : symbolB.startsWith(searchTerm) ? 5 : symbolB.includes(searchTerm) ? 1 : 0) +
+                        (nameB === searchTerm ? 10 : nameB.startsWith(searchTerm) ? 5 : nameB.includes(searchTerm) ? 1 : 0);
+          
+          return scoreB - scoreA; // 得分高的排在前面
+        });
+        
+        // 重新排列股票项
+        const stockList = document.getElementById('stock-list');
+        stockItems.forEach(item => {
+          stockList.appendChild(item);
+        });
+        
+        // 显示或隐藏股票
+        stockItems.forEach(item => {
+          const symbol = item.dataset.symbol.toLowerCase();
+          const name = item.querySelector('.font-medium').textContent.toLowerCase();
+          
+          if (symbol.includes(searchTerm) || name.includes(searchTerm)) {
+            item.classList.remove('hidden');
+            
+            // 高亮显示匹配的文本
+            const nameElement = item.querySelector('.font-medium');
+            const originalName = nameElement.dataset.originalText || nameElement.textContent;
+            nameElement.dataset.originalText = originalName;
+            
+            const highlightedName = originalName.replace(new RegExp(`(${searchTerm})`, 'gi'), '<mark class="bg-yellow-500 bg-opacity-30">$1</mark>');
+            nameElement.innerHTML = highlightedName;
+            
+            const symbolElement = item.querySelector('.text-xs.text-gray-400');
+            const originalSymbol = symbolElement.dataset.originalText || symbolElement.textContent;
+            symbolElement.dataset.originalText = originalSymbol;
+            
+            const highlightedSymbol = originalSymbol.replace(new RegExp(`(${searchTerm})`, 'gi'), '<mark class="bg-yellow-500 bg-opacity-30">$1</mark>');
+            symbolElement.innerHTML = highlightedSymbol;
+          } else {
+            item.classList.add('hidden');
+          }
+        });
+      }
+      
+      // 根据风险等级筛选股票
+      function filterStocksByRiskLevel(level) {
+        const stockItems = Array.from(document.querySelectorAll('#stock-list > div'));
+        
+        // 显示或隐藏股票
+        stockItems.forEach(item => {
+          if (level === 'all') {
+            item.classList.remove('hidden');
+          } else {
+            // 根据股票的风险等级属性进行筛选
+            const symbol = item.dataset.symbol;
+            const stock = mockStocks.find(s => s.symbol === symbol);
+            if (stock && stock.riskLevel === level) {
+              item.classList.remove('hidden');
+            } else {
+              item.classList.add('hidden');
+            }
+          }
+        });
+      }
+      
+      // 实时搜索（带防抖）
+      const debouncedSearch = debounce(searchStocks, 300);
+      document.getElementById('stock-search').addEventListener('input', debouncedSearch);
+      
+      // 搜索按钮点击事件
+      document.getElementById('search-btn').addEventListener('click', searchStocks);
+      
+      // 回车搜索
+      document.getElementById('stock-search').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          searchStocks();
+        }
+      });
+      
+      // 风险等级筛选
+      const riskFilterBtns = document.querySelectorAll('.risk-filter-btn');
+      riskFilterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          // 移除其他选中状态
+          riskFilterBtns.forEach(b => {
+            b.classList.remove('bg-accent', 'text-white');
+            b.classList.add('bg-dark', 'text-gray-400', 'hover:text-white');
+          });
+          
+          // 添加选中状态
+          this.classList.remove('bg-dark', 'text-gray-400', 'hover:text-white');
+          this.classList.add('bg-accent', 'text-white');
+          
+          // 筛选股票
+          const riskLevel = this.dataset.level;
+          filterStocksByRiskLevel(riskLevel);
+        });
+      });
+      
+      // 返回按钮 - 从详情页返回列表页
+      document.getElementById('back-to-list').addEventListener('click', function() {
+        showStockListPage();
+      });
+      
+      // 返回按钮 - 从持仓页返回列表页
+      document.getElementById('back-to-list-from-holdings').addEventListener('click', function() {
+        showStockListPage();
+      });
+      
+      // 返回按钮 - 从交易记录页返回列表页
+      document.getElementById('back-to-list-from-transactions').addEventListener('click', function() {
+        showStockListPage();
+      });
+      
+      // 返回按钮 - 从账户页返回列表页
+      document.getElementById('back-to-list-from-account').addEventListener('click', function() {
+        showStockListPage();
+      });
+      
+      // 底部导航 - 行情按钮
+      document.getElementById('market-btn').addEventListener('click', function() {
+        showStockListPage();
+      });
+      
+      // 底部导航 - 持仓按钮
+      document.getElementById('holdings-btn').addEventListener('click', function() {
+        showHoldingsPage();
+      });
+      
+      // 底部导航 - 交易记录按钮
+      document.getElementById('transactions-btn').addEventListener('click', function() {
+        showTransactionsPage();
+      });
+      
+      // 底部导航 - 账户按钮
+      document.getElementById('account-btn').addEventListener('click', function() {
+        showAccountPage();
+      });
+      
+      // 充值按钮点击事件
+      document.getElementById('recharge-btn').addEventListener('click', function() {
+        document.getElementById('recharge-modal').classList.remove('hidden');
+      });
+      
+      // 取消充值
+      document.getElementById('cancel-recharge').addEventListener('click', function() {
+        document.getElementById('recharge-modal').classList.add('hidden');
+      });
+      
+      // 确认充值
+      document.getElementById('confirm-recharge').addEventListener('click', function() {
+        const amount = parseFloat(document.getElementById('recharge-amount').value);
+        if (isNaN(amount) || amount < 1000) {
+          alert('请输入有效的充值金额，最低1000元');
+          return;
+        }
+        
+        // 增加用户余额
+        currentUser.balance += amount;
+        
+        // 保存用户数据
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        // 更新页面显示
+        document.getElementById('total-assets').textContent = formatCurrency(currentUser.balance + calculateHoldingsValue());
+        document.getElementById('available-funds').textContent = formatCurrency(currentUser.balance);
+        
+        // 显示交易成功提示
+        showTradeSuccessModal('充值成功', `您已成功充值 ¥${amount.toFixed(2)}`);
+        
+        // 关闭充值模态框
+        document.getElementById('recharge-modal').classList.add('hidden');
+        
+        // 清空充值金额输入框
+        document.getElementById('recharge-amount').value = '';
+      });
+      
+      // 交易记录筛选
+      const transactionFilters = document.querySelectorAll('.transaction-filter');
+      transactionFilters.forEach(filter => {
+        filter.addEventListener('click', function() {
+          // 移除其他选中状态
+          transactionFilters.forEach(f => {
+            f.classList.remove('bg-accent', 'text-white');
+            f.classList.add('bg-dark', 'text-gray-400', 'hover:text-white');
+          });
+          
+          // 添加选中状态
+          this.classList.remove('bg-dark', 'text-gray-400', 'hover:text-white');
+          this.classList.add('bg-accent', 'text-white');
+          
+          // 筛选交易记录
+          const filterValue = this.dataset.filter;
+          renderTransactionsList(filterValue);
+        });
+      });
+      
+      // K线图时间周期切换
+      const timePeriodBtns = document.querySelectorAll('.time-period-btn');
+      timePeriodBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          // 移除其他选中状态
+          timePeriodBtns.forEach(b => {
+            b.classList.remove('bg-accent', 'text-white');
+            b.classList.add('bg-dark', 'text-gray-400', 'hover:text-white');
+          });
+          
+          // 添加选中状态
+          this.classList.remove('bg-dark', 'text-gray-400', 'hover:text-white');
+          this.classList.add('bg-accent', 'text-white');
+          
+          // 更新当前时间周期
+          currentTimePeriod = this.dataset.period;
+          
+          // 重新渲染K线图
+          renderStockChart();
+        });
+      });
+      
+      // 买入/卖出切换
+      document.getElementById('buy-tab').addEventListener('click', function() {
+        document.getElementById('buy-tab').classList.remove('text-gray-400', 'bg-dark');
+        document.getElementById('buy-tab').classList.add('text-white', 'bg-accent');
+        
+        document.getElementById('sell-tab').classList.remove('text-white', 'bg-accent');
+        document.getElementById('sell-tab').classList.add('text-gray-400', 'bg-dark');
+        
+        document.getElementById('buy-form').classList.remove('hidden');
+        document.getElementById('sell-form').classList.add('hidden');
+      });
+      
+      document.getElementById('sell-tab').addEventListener('click', function() {
+        document.getElementById('sell-tab').classList.remove('text-gray-400', 'bg-dark');
+        document.getElementById('sell-tab').classList.add('text-white', 'bg-accent');
+        
+        document.getElementById('buy-tab').classList.remove('text-white', 'bg-accent');
+        document.getElementById('buy-tab').classList.add('text-gray-400', 'bg-dark');
+        
+        document.getElementById('sell-form').classList.remove('hidden');
+        document.getElementById('buy-form').classList.add('hidden');
+      });
+      
+      // 买入价格和数量变化时更新总金额
+      document.getElementById('buy-price').addEventListener('input', updateBuyTotalAmount);
+      document.getElementById('buy-shares').addEventListener('input', updateBuyTotalAmount);
+      
+      // 卖出价格和数量变化时更新总金额
+      document.getElementById('sell-price').addEventListener('input', updateSellTotalAmount);
+      document.getElementById('sell-shares').addEventListener('input', updateSellTotalAmount);
+      
+      // 快速选择买入数量
+      const quickSharesBtns = document.querySelectorAll('.quick-shares');
+      quickSharesBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const shares = this.dataset.shares;
+          if (shares === 'max') {
+            // 全仓买入
+            const price = parseFloat(document.getElementById('buy-price').value) || 0;
+            const leverage = parseInt(document.getElementById('buy-leverage').value) || 1;
+            const availableFunds = currentUser.balance;
+            
+            if (price <= 0) {
+              alert('请先输入买入价格');
+            } else if (availableFunds <= 0) {
+              alert('账户余额不足');
+            } else {
+              const maxShares = Math.floor((availableFunds * leverage) / price / 100) * 100;
+              if (maxShares > 0) {
+                document.getElementById('buy-shares').value = maxShares;
+              } else {
+                alert('余额不足，无法购买');
+              }
+            }
+          } else {
+            document.getElementById('buy-shares').value = parseInt(shares);
+          }
+          updateBuyTotalAmount();
+        });
+      });
+      
+      // 快速选择卖出数量
+      const quickSharesSellBtns = document.querySelectorAll('.quick-shares-sell');
+      quickSharesSellBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const shares = this.dataset.shares;
+          if (shares === 'max') {
+            const holding = getHolding(currentStock.symbol);
+            if (holding) {
+              document.getElementById('sell-shares').value = holding.shares;
+            }
+          } else {
+            document.getElementById('sell-shares').value = parseInt(shares);
+          }
+          updateSellTotalAmount();
+        });
+      });
+      
+      // 买入杠杆滑动选择
+      const buyLeverageSlider = document.getElementById('buy-leverage');
+      const buyLeverageValue = document.getElementById('buy-leverage-value');
+      buyLeverageSlider.addEventListener('input', function() {
+        buyLeverageValue.textContent = this.value;
+        
+        // 如果当前有买入数量，重新计算
+        const buySharesInput = document.getElementById('buy-shares');
+        if (buySharesInput.value > 0) {
+          updateBuyTotalAmount();
+        }
+      });
+      
+
+      
+      // 买入按钮点击事件
+      document.getElementById('buy-submit').addEventListener('click', executeBuy);
+      
+      // 卖出按钮点击事件
+      document.getElementById('sell-submit').addEventListener('click', executeSell);
+      
+      // 关闭交易成功提示
+      document.getElementById('close-trade-modal').addEventListener('click', hideTradeSuccessModal);
+      
+      // 重置账户按钮点击事件
+      document.getElementById('reset-account').addEventListener('click', resetAccount);
+      
+      // 退出登录按钮点击事件
+      document.getElementById('logout-btn').addEventListener('click', logout);
+      document.getElementById('logout-from-account').addEventListener('click', logout);
+    });
+  </script>
+</body>
+</html>
