@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>历史版本 - Apocalypse Longjing</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6C63FF',
+                        secondary: '#4A4AFF',
+                        dark: '#1A1A2E',
+                        light: '#F5F5F5',
+                        accent: '#FF6584'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        display: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-gradient {
+                @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
+            }
+            .bg-glass {
+                @apply bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg;
+            }
+            .transition-all-300 {
+                @apply transition-all duration-300 ease-in-out;
+            }
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        
+        html {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        body > *:not(#page-transition) {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        #page-transition {
+            transition: all 0.5s ease-in-out;
+        }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .content-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .content-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body class="bg-dark text-light font-sans" style="opacity: 0; transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);">
+    <!-- 页面过渡动画 -->
+    <div id="page-transition" class="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-dark to-dark/90">
+        <div class="transition-content text-center">
+            <div class="transition-icon animate-pulse text-primary mb-4">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                    <path d="M2 17l10 5 10-5"></path>
+                    <path d="M2 12l10 5 10-5"></path>
+                </svg>
+            </div>
+            <div class="transition-text text-xl font-medium text-gradient">正在加载页面...</div>
+        </div>
+    </div>
+    
+    <!-- 头部导航 -->
+    <nav id="navbar" class="fixed w-full top-0 z-40 transition-all duration-300 bg-transparent">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold text-gradient flex items-center gap-2">
+                <span class="logo-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                        <path d="M2 17l10 5 10-5"></path>
+                        <path d="M2 12l10 5 10-5"></path>
+                    </svg>
+                </span>
+                <span>Apocalypse Longjing</span>
+            </a>
+            
+            <a href="download1.html" class="text-gray-400 hover:text-primary transition-colors">
+                <i class="fa fa-arrow-left mr-2"></i>返回
+            </a>
+        </div>
+    </nav>
+    
+    <!-- 主容器 - 空白区域 -->
+    <div class="main-container container mx-auto px-4 pt-24 pb-12">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <a href="welcome.html" class="content-card p-6 flex flex-col items-center text-center">
+                <div class="h-32 w-full bg-dark flex items-center justify-center mb-4">
+                    <img src="image/img/welcome.PNG" alt="wel欢迎">
+                </div>
+                <span class="text-lg font-medium">欢迎网页</span>
+            </a>
+            <a class="content-card p-6 flex flex-col items-center text-center" id="win-all-activate">
+                <div class="h-32 w-full bg-dark flex items-center justify-center mb-4">
+                    <span class="text-xl font-semibold text-primary">Win_All_Activate</span>
+                </div>
+                <span class="text-lg font-medium">pychat系列激活脚本 - 一键激活Windows所有版本</span>
+                <script>
+                    // 自动下载 Win_All_Activate 文件
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const activateCard = document.getElementById('win-all-activate');
+                        if (activateCard) {
+                            activateCard.addEventListener('click', () => {
+                                const a = document.createElement('a');
+                                a.href = 'xiazai/zip/Win_All_Activate_2.7z';
+                                a.download = '';
+                                document.body.appendChild(a);
+                                a.click();
+                                document.body.removeChild(a);
+                            });
+                        }
+                    });
+                </script>
+            <a href="#" class="content-card p-6 flex flex-col items-center text-center" id="tag3-download">
+                <div class="h-32 w-full bg-dark flex items-center justify-center mb-4">
+                    <img src="xiazai/zip/7z/7z.jpg" alt="7z下载">
+                </div>
+                <span class="text-lg font-medium">7z</span>
+            </a>
+                <script>
+                    // 标签3自动下载 7-zip
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const tag3 = document.getElementById('tag3-download');
+                        if (tag3) {
+                            tag3.addEventListener('click', () => {
+                                const a = document.createElement('a');
+                                a.href = 'xiazai/zip/7z/7-Zip.zip';
+                                a.download = '';
+                                document.body.appendChild(a);
+                                a.click();
+                                document.body.removeChild(a);
+                            });
+                        }
+                    });
+                </script>
+            <a href="#" class="content-card p-6 flex flex-col items-center text-center">
+                <div class="h-32 w-full bg-dark flex items-center justify-center mb-4">
+                    <img src="" alt="标签4">
+                </div>
+                <span class="text-lg font-medium">标签4</span>
+            </a>
+            <a href="#" class="content-card p-6 flex flex-col items-center text-center">
+                <div class="h-32 w-full bg-dark flex items-center justify-center mb-4">
+                    <img src="" alt="标签5">
+                </div>
+                <span class="text-lg font-medium">标签5</span>
+            </a>
+            <a href="#" class="content-card p-6 flex flex-col items-center text-center">
+                <div class="h-32 w-full bg-dark flex items-center justify-center mb-4">
+                    <img src="" alt="标签6">
+                </div>
+                <span class="text-lg font-medium">标签6</span>
+            </a>
+            <a href="#" class="content-card p-6 flex flex-col items-center text-center">
+                <div class="h-32 w-full bg-dark flex items-center justify-center mb-4">
+                    <img src="" alt="标签7">
+                </div>
+                <span class="text-lg font-medium">标签7</span>
+            </a>
+            <a href="#" class="content-card p-6 flex flex-col items-center text-center">
+                <div class="h-32 w-full bg-dark flex items-center justify-center mb-4">
+                    <img src="" alt="标签8">
+                </div>
+                <span class="text-lg font-medium">标签8</span>
+            </a>
+            <a href="#" class="content-card p-6 flex flex-col items-center text-center">
+                <div class="h-32 w-full bg-dark flex items-center justify-center mb-4">
+                    <img src="" alt="标签9">
+                </div>
+                <span class="text-lg font-medium">标签9</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+            
+            const pageTransition = document.getElementById('page-transition');
+            setTimeout(() => {
+                pageTransition.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    pageTransition.style.display = 'none';
+                }, 500);
+            }, 800);
+            
+            setTimeout(() => {
+                const mainContentElements = document.querySelectorAll('body > *:not(#page-transition)');
+                mainContentElements.forEach((element, index) => {
+                    setTimeout(() => {
+                        element.style.opacity = '1';
+                        element.style.transform = 'translateY(0)';
+                    }, 100 + (index * 80));
+                });
+            }, 300);
+            
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('bg-dark', 'bg-opacity-90', 'backdrop-blur-lg', 'shadow-lg');
+                    navbar.classList.remove('bg-transparent');
+                } else {
+                    navbar.classList.remove('bg-dark', 'bg-opacity-90', 'backdrop-blur-lg', 'shadow-lg');
+                    navbar.classList.add('bg-transparent');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

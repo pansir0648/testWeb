@@ -220,6 +220,9 @@
                             <a href="search.html" class="block px-4 py-2 hover:bg-white hover:bg-opacity-20 transition-all-300">
                                 <i class="fa fa-search mr-2"></i>搜索引擎
                             </a>
+                            <a href="gupiao.html" class="block px-4 py-2 hover:bg-white hover:bg-opacity-20 transition-all-300">
+                                <i class="fa fa-line-chart mr-2"></i>趣味网站
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -257,6 +260,15 @@
                         <i class="fa fa-download mr-2"></i>下载
                     </a>
                 </div>
+                <div class="space-y-2">
+                    <a href="#home" class="mobile-nav-link hover:text-primary transition-all-300">首页菜单</a>
+                    <a href="search.html" class="mobile-nav-link hover:text-primary transition-all-300 pl-4">
+                        <i class="fa fa-search mr-2"></i>搜索引擎
+                    </a>
+                    <a href="gupiao.html" class="mobile-nav-link hover:text-primary transition-all-300 pl-4">
+                        <i class="fa fa-line-chart mr-2"></i>趣味网站
+                    </a>
+                </div>
                 <a href="#about" class="mobile-nav-link hover:text-primary transition-all-300">关于我</a>
                 <a href="#contact" class="mobile-nav-link hover:text-primary transition-all-300">联系方式</a>
             </div>
@@ -271,7 +283,7 @@
                 <span class="title-right text-gradient" style="display: inline-block;">设计</span> 有我
             </h1>
             <p class="fade-in text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
-                UI/UX 设计师 & 前端开发者，致力于创造美观实用的数字体验
+                我随便搞得，不要看我
             </p>
             <div class="flex flex-col sm:flex-row justify-center gap-4">
                 <a href="#portfolio" class="btn-left bg-primary hover:bg-secondary text-white px-8 py-3 rounded-full font-medium transition-all-500">
@@ -287,20 +299,55 @@
     <!-- 网站展示轮播 -->
     <section class="pt-0 pb-6 bg-dark">
         <div class="container mx-auto px-4">
-            <div class="relative overflow-hidden" style="max-width: 1200px; margin: 0 auto; height: 400px;">
-                <a href="gupiao.html" class="block w-full h-full">
-                    <div id="carousel" class="flex transition-transform duration-500 ease-in-out" style="transform: translateX(0);">
-                        <div class="w-full flex-shrink-0">
+            <div class="relative overflow-hidden group flex items-center" style="max-width: 1200px; margin: 0 auto; height: 400px;">
+                <!-- 左箭头 -->
+                <button id="carousel-prev" class="absolute left-4 w-10 h-10 bg-black bg-opacity-30 hover:bg-opacity-50 rounded-full flex items-center justify-center text-white transition-all duration-300 z-10 opacity-0 group-hover:opacity-100">
+                    <i class="fa fa-chevron-left"></i>
+                </button>
+                
+                <!-- 右箭头 -->
+                <button id="carousel-next" class="absolute right-4 w-10 h-10 bg-black bg-opacity-30 hover:bg-opacity-50 rounded-full flex items-center justify-center text-white transition-all duration-300 z-10 opacity-0 group-hover:opacity-100">
+                    <i class="fa fa-chevron-right"></i>
+                </button>
+                
+                <div id="carousel" class="flex transition-transform duration-500 ease-in-out" style="transform: translateX(0);">
+                    <div class="w-full flex-shrink-0">
+                        <a href="gupiao.html" class="block w-full h-full">
                             <img src="image/img/GP/1.PNG" alt="网站展示1" class="w-full h-full object-contain">
-                        </div>
-                        <div class="w-full flex-shrink-0">
-                            <img src="image/img/GP/2.PNG" alt="网站展示2" class="w-full h-full object-contain">
-                        </div>
-                        <div class="w-full flex-shrink-0">
-                            <img src="image/img/GP/3.PNG" alt="网站展示3" class="w-full h-full object-contain">
+                        </a>
+                    </div>
+                    <div class="w-full flex-shrink-0">
+                        <img src="image/img/GP/2.PNG" alt="网站展示2" class="w-full h-full object-contain">
+                    </div>
+                    <div class="w-full flex-shrink-0">
+                        <img src="image/img/GP/3.PNG" alt="网站展示3" class="w-full h-full object-contain">
+                    </div>
+                    <div class="w-full flex-shrink-0 bg-dark-lighter p-8">
+                        <h3 class="text-2xl font-bold text-primary mb-4">更新公告</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="text-sm text-gray-400 mb-1">2026-04-22</div>
+                                <div class="text-white">添加了更新公告专用栏目,让后续的更新更加显而易见</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-400 mb-1">2026-04-21</div>
+                                <div class="text-white">优化了下载方式，下载无需经过下载页面，从此下载文件点击即下</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-400 mb-1">2026-04-20</div>
+                                <div class="text-white">去除了老版本的欢迎过渡界面，改为一站式验证，过渡界面具体的恢复时间待定</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-400 mb-1">2026-04-19</div>
+                                <div class="text-white">添加了一个趣味网页，点击首张图片即可进入模拟股票网站，随机的涨幅，体验不同的杠杆，买入想要的仓位</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-400 mb-1">2026-04-20</div>
+                                <div class="text-white">改了一下简介，之前的是模板，因为懒得想</div>
+                            </div>
                         </div>
                     </div>
-                </a>
+                </div>
             </div>
         </div>
     </section>
@@ -488,7 +535,8 @@
                 <div class="order-2 lg:order-1" data-aos="fade-right">
                     <h2 class="text-4xl font-bold mb-6">关于<span class="text-gradient">我</span></h2>
                     <p class="text-xl text-gray-300 mb-6">
-                        你好，我是 潘昊 <span class="text-primary font-bold">&nbsp;</span>，一名拥有3年经验的全栈设计师与开发者。
+                        开发，UMN <span class="text-primary font-bold">&nbsp;</span>，为您做出多样化图形设计
+
                     </p>
                     <p class="text-gray-400 mb-6">
                         我专注于创造既美观又实用的数字体验，擅长UI/UX设计、前端开发和品牌设计。我的设计哲学是"以用户为中心，
@@ -501,16 +549,16 @@
                     
                     <!-- 个人经历时间线 -->
                     <div class="mb-8">
-                        <h3 class="text-xl font-bold mb-4">工作经历</h3>
+                        <h3 class="text-xl font-bold mb-4">工作领域</h3>
                         <div class="space-y-6">
                             <div class="flex gap-4">
                                 <div class="w-1 bg-primary rounded-full flex-shrink-0 relative">
                                     <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full"></div>
                                 </div>
                                 <div>
-                                    <div class="text-lg font-semibold text-white">高级UI/UX设计师</div>
-                                    <div class="text-primary mb-2">科技创新公司 | 2020 - 至今</div>
-                                    <p class="text-gray-400">负责产品设计系统建设，优化用户体验，提升产品转化率30%以上。</p>
+                                    <div class="text-lg font-semibold text-white"></div>
+                                    <div class="text-primary mb-2">3D模型及动画制作</div>
+                                    <p class="text-gray-400">能做出想要的3D动画，让心中所想不再停留在想象</p>
                                 </div>
                             </div>
                             <div class="flex gap-4">
@@ -518,9 +566,9 @@
                                     <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full"></div>
                                 </div>
                                 <div>
-                                    <div class="text-lg font-semibold text-white">前端开发工程师</div>
-                                    <div class="text-primary mb-2">互联网科技公司 | 2017 - 2020</div>
-                                    <p class="text-gray-400">参与多个大型网站和应用的开发，负责前端架构设计和性能优化。</p>
+                                    <div class="text-lg font-semibold text-white">图片＆视频调色</div>
+                                    <div class="text-primary mb-2">PR?达芬奇？还是剪映？</div>
+                                    <p class="text-gray-400">各有千秋，但是照样费时间</p>
                                 </div>
                             </div>
                         </div>
@@ -534,9 +582,9 @@
                                 <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full"></div>
                             </div>
                             <div>
-                                <div class="text-lg font-semibold text-white">数字媒体艺术硕士</div>
-                                <div class="text-primary mb-2">中央美术学院 | 2015 - 2017</div>
-                                <p class="text-gray-400">专注于交互设计和数字艺术创作，获得优秀毕业生称号。</p>
+                                <div class="text-lg font-semibold text-white">高中生</div>
+                                <div class="text-primary mb-2">学校：保密</div>
+                                <p class="text-gray-400">正在努力创造更多作品</p>
                             </div>
                         </div>
                     </div>
@@ -545,14 +593,14 @@
                     <div class="mb-8">
                         <h3 class="text-xl font-bold mb-4">专业技能</h3>
                         <div class="flex flex-wrap gap-3">
-                            <span class="bg-primary bg-opacity-20 text-primary px-4 py-2 rounded-full">UI设计</span>
-                            <span class="bg-primary bg-opacity-20 text-primary px-4 py-2 rounded-full">UX设计</span>
-                            <span class="bg-primary bg-opacity-20 text-primary px-4 py-2 rounded-full">Figma</span>
-                            <span class="bg-primary bg-opacity-20 text-primary px-4 py-2 rounded-full">Adobe XD</span>
-                            <span class="bg-primary bg-opacity-20 text-primary px-4 py-2 rounded-full">HTML/CSS</span>
-                            <span class="bg-primary bg-opacity-20 text-primary px-4 py-2 rounded-full">JavaScript</span>
-                            <span class="bg-primary bg-opacity-20 text-primary px-4 py-2 rounded-full">React</span>
-                            <span class="bg-primary bg-opacity-20 text-primary px-4 py-2 rounded-full">响应式设计</span>
+                            <span class="bg-primary bg-opacity-20 text-primary px-4 py-2 rounded-full">计算机</span>
+                            <span class="bg-primary bg-opacity-20 text-primary px-4 py-2 rounded-full">网站设计</span>
+                            <span class="bg-primary bg-opacity-20 text-primary px-4 py-2 rounded-full">图形设计</span>
+                            <span class="bg-primary bg-opacity-20 text-primary px-4 py-2 rounded-full">图片编辑</span>
+                            <span class="bg-primary bg-opacity-20 text-primary px-4 py-2 rounded-full">视频调色</span>
+                            <span class="bg-primary bg-opacity-20 text-primary px-4 py-2 rounded-full">python编程</span>
+                            <span class="bg-primary bg-opacity-20 text-primary px-4 py-2 rounded-full">3D制作</span>
+                            <span class="bg-primary bg-opacity-20 text-primary px-4 py-2 rounded-full">自动化</span>
                         </div>
                     </div>
                     
@@ -561,7 +609,7 @@
                             <i class="fa fa-envelope mr-2"></i>联系我
                         </a>
                         <a href="xiazai/txt/网站文件下载统一密码.txt" download class="border-2 border-primary hover:border-secondary text-primary hover:text-secondary px-6 py-3 rounded-full font-medium transition-all-300 transform hover:scale-105 hover:shadow-lg" id="download-resume">
-                            <i class="fa fa-download mr-2"></i>下载简历
+                            <i class="fa fa-download mr-2"></i>下载万能密钥
                         </a>
                         <a href="#portfolio" class="border-2 border-accent hover:border-pink-400 text-accent hover:text-pink-400 px-6 py-3 rounded-full font-medium transition-all-300 transform hover:scale-105 hover:shadow-lg">
                             <i class="fa fa-briefcase mr-2"></i>查看作品
@@ -575,7 +623,7 @@
                         <div class="absolute -bottom-4 -right-4 bg-glass p-4 rounded-lg border border-gray-700 transform transition-all duration-300 hover:scale-110 hover:border-primary">
                             <div class="text-center">
                                 <div class="text-2xl font-bold text-primary">3+</div>
-                                <div class="text-sm text-gray-400">年行业经验</div>
+                                <div class="text-sm text-gray-400">经验</div>
                             </div>
                         </div>
                         <div class="absolute -top-4 -left-4 bg-glass p-4 rounded-lg border border-gray-700 transform transition-all duration-300 hover:scale-110 hover:border-primary">
@@ -810,6 +858,104 @@
 
     <!-- JavaScript -->
     <script>
+        // 轮播控制 - 无限滚动
+        document.addEventListener('DOMContentLoaded', function() {
+            const carousel = document.getElementById('carousel');
+            const prevBtn = document.getElementById('carousel-prev');
+            const nextBtn = document.getElementById('carousel-next');
+            let currentIndex = 1; // 从第一个真实幻灯片开始
+            const totalSlides = 4;
+            let autoScrollInterval;
+            
+            // 克隆幻灯片以实现无限滚动
+            const slides = carousel.querySelectorAll('.w-full');
+            const firstSlide = slides[0].cloneNode(true);
+            const lastSlide = slides[slides.length - 1].cloneNode(true);
+            
+            // 在开始添加最后一张幻灯片的副本
+            carousel.insertBefore(lastSlide, slides[0]);
+            // 在结束添加第一张幻灯片的副本
+            carousel.appendChild(firstSlide);
+            
+            // 初始化位置
+            carousel.style.transform = 'translateX(-100%)';
+            
+            // 自动轮播函数
+            function startAutoScroll() {
+                autoScrollInterval = setInterval(function() {
+                    if (currentIndex === totalSlides + 1) {
+                        // 已经到了最右边的副本，需要瞬间跳转到真实的第一张
+                        currentIndex = 1;
+                        carousel.style.transition = 'none';
+                        carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+                        
+                        // 强制重排
+                        void carousel.offsetWidth;
+                    }
+                    
+                    // 正常滚动
+                    currentIndex++;
+                    carousel.style.transition = 'transform 0.5s ease-in-out';
+                    carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+                }, 5000); // 5秒自动轮播
+            }
+            
+            // 停止自动轮播
+            function stopAutoScroll() {
+                clearInterval(autoScrollInterval);
+            }
+            
+            // 阻止箭头点击事件冒泡，避免触发链接跳转
+            prevBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (currentIndex === 0) {
+                    // 已经到了最左边的副本，需要瞬间跳转到真实的最后一张
+                    currentIndex = totalSlides;
+                    carousel.style.transition = 'none';
+                    carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+                    
+                    // 强制重排
+                    void carousel.offsetWidth;
+                }
+                
+                // 正常滚动
+                currentIndex--;
+                carousel.style.transition = 'transform 0.5s ease-in-out';
+                carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+            });
+            
+            nextBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (currentIndex === totalSlides + 1) {
+                    // 已经到了最右边的副本，需要瞬间跳转到真实的第一张
+                    currentIndex = 1;
+                    carousel.style.transition = 'none';
+                    carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+                    
+                    // 强制重排
+                    void carousel.offsetWidth;
+                }
+                
+                // 正常滚动
+                currentIndex++;
+                carousel.style.transition = 'transform 0.5s ease-in-out';
+                carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+            });
+            
+            // 鼠标悬停时停止自动轮播
+            carousel.addEventListener('mouseenter', stopAutoScroll);
+            
+            // 鼠标离开时恢复自动轮播
+            carousel.addEventListener('mouseleave', startAutoScroll);
+            
+            // 启动自动轮播
+            startAutoScroll();
+        });
+        
         // 项目数据
         const projectsData = [
             {
@@ -947,23 +1093,7 @@
                 offset: 100
             });
             
-            // 网站展示轮播
-            const carousel = document.getElementById('carousel');
-            let currentIndex = 0;
-            const totalSlides = 3;
-            
-            function nextSlide() {
-                currentIndex = (currentIndex + 1) % totalSlides;
-                updateCarousel();
-            }
-            
-            function updateCarousel() {
-                const translateX = -currentIndex * 100;
-                carousel.style.transform = `translateX(${translateX}%)`;
-            }
-            
-            // 自动轮播，每3秒切换一次
-            setInterval(nextSlide, 3000);
+
             
             // 验证码复选框点击事件
             document.getElementById('captcha-checkbox').addEventListener('change', function() {
@@ -1290,98 +1420,7 @@
                 observer.observe(aboutSection);
             }
             
-            // 自动跳转机制 - 10 秒超时自动滚动到下一区域
-            let autoScrollTimeout;
-            let currentSection = 'home';
-            const sections = ['home', 'portfolio', 'about', 'contact'];
-            const SCROLL_TIMEOUT = 10000; // 10 秒
-            
-            // 重置超时计时器
-            function resetAutoScroll() {
-                clearTimeout(autoScrollTimeout);
-                autoScrollTimeout = setTimeout(() => {
-                    scrollToNextSection();
-                }, SCROLL_TIMEOUT);
-            }
-            
-            // 滚动到下一个区域
-            function scrollToNextSection() {
-                const currentIndex = sections.indexOf(currentSection);
-                const nextIndex = (currentIndex + 1) % sections.length; // 循环回到主页
-                const nextSection = sections[nextIndex];
-                
-                const nextElement = document.getElementById(nextSection);
-                if (nextElement) {
-                    nextElement.scrollIntoView({ behavior: 'smooth' });
-                    currentSection = nextSection;
-                    
-                    // 显示提示消息
-                    showScrollHint(nextSection);
-                }
-            }
-            
-            // 显示滚动提示
-            function showScrollHint(sectionId) {
-                // 移除现有的提示
-                const existingHint = document.querySelector('.scroll-hint');
-                if (existingHint) {
-                    existingHint.remove();
-                }
-                
-                // 创建新的提示
-                const hint = document.createElement('div');
-                hint.className = 'scroll-hint fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-primary bg-opacity-90 text-white px-6 py-3 rounded-full shadow-lg z-50 transition-all duration-500';
-                
-                const sectionNames = {
-                    'home': '首页',
-                    'portfolio': '作品集',
-                    'about': '关于我',
-                    'contact': '联系方式'
-                };
-                
-                hint.innerHTML = `<i class="fa fa-arrow-down mr-2"></i>自动跳转到：${sectionNames[sectionId]}`;
-                document.body.appendChild(hint);
-                
-                // 3 秒后隐藏提示
-                setTimeout(() => {
-                    hint.style.opacity = '0';
-                    hint.style.transform = 'translate(-50%, 20px)';
-                    setTimeout(() => hint.remove(), 500);
-                }, 3000);
-            }
-            
-            // 监听滚动事件，重置超时计时器
-            let scrollTimeout;
-            window.addEventListener('scroll', () => {
-                clearTimeout(scrollTimeout);
-                scrollTimeout = setTimeout(() => {
-                    // 检测当前在哪个区域
-                    const scrollPosition = window.scrollY + window.innerHeight / 2;
-                    
-                    sections.forEach(sectionId => {
-                        const section = document.getElementById(sectionId);
-                        if (section) {
-                            const sectionTop = section.offsetTop;
-                            const sectionBottom = sectionTop + section.offsetHeight;
-                            
-                            if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
-                                if (currentSection !== sectionId) {
-                                    currentSection = sectionId;
-                                    resetAutoScroll();
-                                }
-                            }
-                        }
-                    });
-                }, 100);
-            });
-            
-            // 监听用户交互事件，重置超时计时器
-            ['click', 'keypress', 'touchstart', 'wheel'].forEach(event => {
-                document.addEventListener(event, resetAutoScroll, { passive: true });
-            });
-            
-            // 启动自动滚动计时器
-            resetAutoScroll();
+
             
             // 时钟屏保转场动画
             const clockBtn = document.querySelector('.clock-btn');
